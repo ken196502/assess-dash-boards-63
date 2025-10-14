@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -7,6 +8,16 @@ import { Plus, Trash2, UserPlus, X, ChevronUp, ChevronDown, Copy, Edit, Save, Ma
 import { KPI, Category, Evaluator } from "@/types/assessment"
 import { ScoreDialog } from "./ScoreDialog"
 import { toast } from "@/hooks/use-toast"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 interface UnifiedKPITableProps {
   categories: Category[]
@@ -45,6 +56,16 @@ export function UnifiedKPITable({
   canRemoveCategory,
   onMoveEvaluator
 }: UnifiedKPITableProps) {
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; type: 'category' | 'kpi' | 'evaluator'; id: string; categoryId?: string; kpiId?: string }>({
+    open: false,
+    type: 'category',
+    id: '',
+  })
+  const [inviteDialog, setInviteDialog] = useState<{ open: boolean; name: string }>({
+    open: false,
+    name: '',
+  })
+  
   
   // 计算总加权分数（负数不乘以权重）
   const calculateTotalWeightedScore = () => {
@@ -85,10 +106,33 @@ export function UnifiedKPITable({
 
   // 处理邀请评价
   const handleInvite = (evaluatorName: string) => {
+    setInviteDialog({ open: true, name: evaluatorName })
+  }
+
+  const confirmInvite = () => {
     toast({
       title: "已发送邀请",
-      description: `已邀请${evaluatorName}进行评价`,
+      description: `已邀请${inviteDialog.name}进行评价`,
     })
+    setInviteDialog({ open: false, name: '' })
+  }
+
+  const handleDeleteClick = (type: 'category' | 'kpi' | 'evaluator', id: string, categoryId?: string, kpiId?: string) => {
+    setDeleteDialog({ open: true, type, id, categoryId, kpiId })
+  }
+
+  const confirmDelete = () => {
+    const { type, id, categoryId, kpiId } = deleteDialog
+    
+    if (type === 'category') {
+      onRemoveCategory(id)
+    } else if (type === 'kpi' && categoryId) {
+      onRemoveKPI(categoryId, id)
+    } else if (type === 'evaluator' && categoryId && kpiId) {
+      onRemoveEvaluator(categoryId, kpiId, id)
+    }
+    
+    setDeleteDialog({ open: false, type: 'category', id: '' })
   }
 
   // 检查是否可以填写评分（顺序限制 - 仅在每个指标内）
@@ -182,7 +226,7 @@ export function UnifiedKPITable({
                                   <Button
                                     size="sm"
                                     variant="outline"
-                                    onClick={() => onRemoveCategory(category.id)}
+                                    onClick={() => handleDeleteClick('category', category.id)}
                                     className="text-red-600 hover:text-red-700 hover:bg-red-50"
                                   >
                                     <Trash2 className="w-4 h-4" />
@@ -299,7 +343,7 @@ export function UnifiedKPITable({
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                onClick={() => onRemoveEvaluator(category.id, kpi.id, evaluator.id)}
+                                onClick={() => handleDeleteClick('evaluator', evaluator.id, category.id, kpi.id)}
                                 className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
                               >
                                 <X className="h-4 w-4" />
@@ -408,7 +452,7 @@ export function UnifiedKPITable({
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                onClick={() => onRemoveKPI(category.id, kpi.id)}
+                                onClick={() => handleDeleteClick('kpi', kpi.id, category.id)}
                                 className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
                                 title="删除指标"
                               >
@@ -530,6 +574,42 @@ export function UnifiedKPITable({
           </Button>
         </div>
       )}
+
+      {/* 删除确认对话框 */}
+      <AlertDialog open={deleteDialog.open} onOpenChange={(open) => setDeleteDialog({ ...deleteDialog, open })}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>确认删除</AlertDialogTitle>
+            <AlertDialogDescription>
+              删除后无法恢复，确定删除吗？
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
+              确定删除
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* 邀请确认对话框 */}
+      <AlertDialog open={inviteDialog.open} onOpenChange={(open) => setInviteDialog({ ...inviteDialog, open })}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>确认邀请</AlertDialogTitle>
+            <AlertDialogDescription>
+              发送邀请后无法撤回，确定发送吗？
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmInvite}>
+              确定发送
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
