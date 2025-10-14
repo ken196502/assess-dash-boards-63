@@ -28,7 +28,7 @@ const initialDepartments: Department[] = [
             name: "营业收入指标",
             target: "1000万元",
             evaluators: [
-              { id: "eval1", name: "章三", weight: "50%" },
+              { id: "eval1", name: "张三", weight: "50%" },
               { id: "eval2", name: "李四", weight: "50%" },
             ],
             description:
@@ -38,7 +38,7 @@ const initialDepartments: Department[] = [
             id: "profit",
             name: "营业利润指标",
             target: "200万元",
-            evaluators: [{ id: "eval3", name: "章三", weight: "100%" }],
+            evaluators: [{ id: "eval3", name: "张三", weight: "100%" }],
             description:
               "口径说明：与财务部报送总部口径一致，不考虑协同收入及所得税费用，得分=实际完成值/目标值，120分封顶。",
           },

@@ -3,9 +3,10 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { Plus, Trash2, UserPlus, X, ChevronUp, ChevronDown, Copy, Edit, Save } from "lucide-react"
+import { Plus, Trash2, UserPlus, X, ChevronUp, ChevronDown, Copy, Edit, Save, Mail } from "lucide-react"
 import { KPI, Category, Evaluator } from "@/types/assessment"
 import { ScoreDialog } from "./ScoreDialog"
+import { toast } from "@/hooks/use-toast"
 
 interface UnifiedKPITableProps {
   categories: Category[]
@@ -45,7 +46,7 @@ export function UnifiedKPITable({
   onMoveEvaluator
 }: UnifiedKPITableProps) {
   
-  // 计算总加权分数
+  // 计算总加权分数（负数不乘以权重）
   const calculateTotalWeightedScore = () => {
     let totalScore = 0
     let hasAnyScore = false
@@ -60,7 +61,12 @@ export function UnifiedKPITable({
           if (evaluator.score !== undefined) {
             const weight = parseFloat(evaluator.weight.replace('%', '')) / 100
             if (!isNaN(weight)) {
-              kpiWeightedScore += evaluator.score * weight
+              // 负数不乘以权重
+              if (evaluator.score < 0) {
+                kpiWeightedScore += evaluator.score
+              } else {
+                kpiWeightedScore += evaluator.score * weight
+              }
               kpiTotalWeight += weight
               kpiHasScore = true
             }
@@ -75,6 +81,14 @@ export function UnifiedKPITable({
     })
 
     return hasAnyScore ? totalScore.toFixed(1) : '--'
+  }
+
+  // 处理邀请评价
+  const handleInvite = (evaluatorName: string) => {
+    toast({
+      title: "已发送邀请",
+      description: `已邀请${evaluatorName}进行评价`,
+    })
   }
 
   // 检查是否可以填写评分（顺序限制 - 仅在每个指标内）
@@ -301,9 +315,18 @@ export function UnifiedKPITable({
                       <TableCell>
                         {editingCategory === category.id ? (
                           <Input
-                            value={evaluator.weight}
-                            onChange={(e) => onUpdateEvaluator(category.id, kpi.id, evaluator.id, "weight", e.target.value)}
-                            placeholder="权重"
+                            type="number"
+                            min="1"
+                            max="100"
+                            value={evaluator.weight.replace('%', '')}
+                            onChange={(e) => {
+                              const value = e.target.value
+                              const numValue = parseInt(value)
+                              if (value === '' || (numValue >= 1 && numValue <= 100)) {
+                                onUpdateEvaluator(category.id, kpi.id, evaluator.id, "weight", value === '' ? '' : `${numValue}%`)
+                              }
+                            }}
+                            placeholder="1-100"
                             className="w-full"
                           />
                         ) : (
@@ -318,55 +341,82 @@ export function UnifiedKPITable({
                         {(() => {
                           const canFill = canFillScore(category.id, kpi.id, evalIndex)
                           return (
-                            <ScoreDialog
-                              score={evaluator.score}
-                              onScoreChange={(score) => onUpdateEvaluator(category.id, kpi.id, evaluator.id, "score", score)}
-                              disabled={!canFill}
-                            >
-                              <Button
-                                variant="ghost"
-                                className={`h-8 px-2 text-sm font-medium w-full ${
-                                  canFill 
-                                    ? "text-orange-600 hover:text-orange-700 hover:bg-orange-50" 
-                                    : "text-gray-400 cursor-not-allowed"
-                                }`}
+                            <div className="space-y-1">
+                              <ScoreDialog
+                                score={evaluator.score}
+                                remark={evaluator.remark}
+                                onScoreChange={(score, remark) => {
+                                  onUpdateEvaluator(category.id, kpi.id, evaluator.id, "score", score)
+                                  onUpdateEvaluator(category.id, kpi.id, evaluator.id, "remark", remark)
+                                }}
                                 disabled={!canFill}
                               >
-                                {evaluator.score !== undefined ? evaluator.score.toFixed(1) : '--'}
-                              </Button>
-                            </ScoreDialog>
+                                <Button
+                                  variant="ghost"
+                                  className={`h-8 px-2 text-sm font-medium w-full ${
+                                    canFill 
+                                      ? "text-orange-600 hover:text-orange-700 hover:bg-orange-50" 
+                                      : "text-gray-400 cursor-not-allowed"
+                                  }`}
+                                  disabled={!canFill}
+                                >
+                                  {evaluator.score !== undefined ? evaluator.score.toFixed(1) : '--'}
+                                </Button>
+                              </ScoreDialog>
+                              {evaluator.remark && (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="text-xs text-gray-500 line-clamp-1 cursor-help">
+                                      {evaluator.remark}
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent className="max-w-sm">
+                                    <p className="text-sm">{evaluator.remark}</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              )}
+                            </div>
                           )
                         })()}
                       </TableCell>
 
                       {/* 操作列 */}
                       <TableCell>
-                        {editingCategory === category.id && (
-                          <div className="flex gap-1">
-                            {evalIndex === kpi.evaluators.length - 1 && (
-                              <>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => onAddEvaluator(category.id, kpi.id)}
-                                  className="h-6 w-6 p-0 text-blue-500 hover:text-blue-700 hover:bg-blue-50"
-                                  title="添加评价人"
-                                >
-                                  <UserPlus className="h-3 w-3" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => onRemoveKPI(category.id, kpi.id)}
-                                  className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-                                  title="删除指标"
-                                >
-                                  <Trash2 className="h-3 w-3" />
-                                </Button>
-                              </>
-                            )}
-                          </div>
-                        )}
+                        <div className="flex gap-1">
+                          {!editingCategory && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleInvite(evaluator.name)}
+                              className="h-6 w-6 p-0 text-purple-500 hover:text-purple-700 hover:bg-purple-50"
+                              title="邀请评价"
+                            >
+                              <Mail className="h-3 w-3" />
+                            </Button>
+                          )}
+                          {editingCategory === category.id && evalIndex === kpi.evaluators.length - 1 && (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => onAddEvaluator(category.id, kpi.id)}
+                                className="h-6 w-6 p-0 text-blue-500 hover:text-blue-700 hover:bg-blue-50"
+                                title="添加评价人"
+                              >
+                                <UserPlus className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => onRemoveKPI(category.id, kpi.id)}
+                                className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                title="删除指标"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </>
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   )

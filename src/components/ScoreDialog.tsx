@@ -4,28 +4,32 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 
 interface ScoreDialogProps {
   score?: number
-  onScoreChange: (score: number) => void
+  remark?: string
+  onScoreChange: (score: number, remark: string) => void
   children: React.ReactNode
   disabled?: boolean
 }
 
-export function ScoreDialog({ score, onScoreChange, children, disabled = false }: ScoreDialogProps) {
+export function ScoreDialog({ score, remark, onScoreChange, children, disabled = false }: ScoreDialogProps) {
   const [open, setOpen] = useState(false)
   const [tempScore, setTempScore] = useState(score?.toString() || "")
+  const [tempRemark, setTempRemark] = useState(remark || "")
 
   const handleSave = () => {
     const numScore = parseFloat(tempScore)
-    if (!isNaN(numScore) && numScore >= 0 && numScore <= 120) {
-      onScoreChange(numScore)
+    if (!isNaN(numScore) && numScore >= -999 && numScore <= 120) {
+      onScoreChange(numScore, tempRemark)
       setOpen(false)
     }
   }
 
   const handleCancel = () => {
     setTempScore(score?.toString() || "")
+    setTempRemark(remark || "")
     setOpen(false)
   }
 
@@ -44,16 +48,27 @@ export function ScoreDialog({ score, onScoreChange, children, disabled = false }
         </DialogHeader>
         <div className="space-y-4 pt-4">
           <div className="space-y-2">
-            <Label htmlFor="score">分数 (0-120分)</Label>
+            <Label htmlFor="score">分数 (负数或0-120分)</Label>
             <Input
               id="score"
               type="number"
-              min="0"
+              min="-999"
               max="120"
               step="0.1"
               value={tempScore}
               onChange={(e) => setTempScore(e.target.value)}
               placeholder="请输入分数"
+            />
+            <p className="text-sm text-muted-foreground">负数不乘以权重</p>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="remark">备注</Label>
+            <Textarea
+              id="remark"
+              value={tempRemark}
+              onChange={(e) => setTempRemark(e.target.value)}
+              placeholder="请输入备注"
+              rows={3}
             />
           </div>
           <div className="flex justify-end space-x-2">
