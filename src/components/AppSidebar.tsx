@@ -1,4 +1,4 @@
-import { Building2, User } from "lucide-react"
+import { Building2, User, FileText } from "lucide-react"
 import { NavLink } from "react-router-dom"
 
 import {
@@ -16,6 +16,7 @@ import {
 const items = [
   { title: "部门考核管理", url: "/", icon: Building2 },
   { title: "个人考核管理", url: "/personal", icon: User },
+  { title: "个人考核模板管理", url: "/template", icon: FileText },
 ]
 
 export function AppSidebar() {

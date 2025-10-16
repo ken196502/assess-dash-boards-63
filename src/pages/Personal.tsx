@@ -15,6 +15,7 @@ const mockEmployees: Employee[] = [
     department: "业务部门",
     name: "张三",
     position: "经理",
+    level: "主管",
     annualScore: 85.5,
     annualGrade: "A",
     year: 2024
@@ -25,6 +26,7 @@ const mockEmployees: Employee[] = [
     department: "技术部门",
     name: "李四",
     position: "工程师",
+    level: "员工",
     annualScore: 78.3,
     annualGrade: "B",
     year: 2024
@@ -35,6 +37,7 @@ const mockEmployees: Employee[] = [
     department: "业务部门",
     name: "王五",
     position: "主管",
+    level: "主管",
     annualScore: 92.1,
     annualGrade: "A",
     year: 2024
@@ -48,6 +51,7 @@ export default function Personal() {
     department: "all",
     name: "",
     position: "",
+    level: "all",
     year: "2024"
   })
 
@@ -67,6 +71,7 @@ export default function Personal() {
     if (filters.department !== "all" && emp.department !== filters.department) return false
     if (filters.name && !emp.name.includes(filters.name)) return false
     if (filters.position && !emp.position.includes(filters.position)) return false
+    if (filters.level !== "all" && emp.level !== filters.level) return false
     if (filters.year && emp.year.toString() !== filters.year) return false
     return true
   })
@@ -91,7 +96,7 @@ export default function Personal() {
 
           {/* 筛选区域 */}
           <div className="bg-white p-4 rounded-lg border border-gray-200 mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">部门</label>
                 <Select 
@@ -129,6 +134,23 @@ export default function Personal() {
               </div>
               
               <div>
+                <label className="text-sm font-medium mb-2 block">职级</label>
+                <Select 
+                  value={filters.level} 
+                  onValueChange={(value) => setFilters({...filters, level: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">全部职级</SelectItem>
+                    <SelectItem value="员工">员工</SelectItem>
+                    <SelectItem value="主管">主管</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
                 <label className="text-sm font-medium mb-2 block">年度</label>
                 <Select 
                   value={filters.year} 
@@ -153,13 +175,14 @@ export default function Personal() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[12%]">工号</TableHead>
-                <TableHead className="w-[15%]">部门</TableHead>
-                <TableHead className="w-[12%]">姓名</TableHead>
-                <TableHead className="w-[15%]">职位</TableHead>
-                <TableHead className="w-[15%]">年度绩效考核分数</TableHead>
-                <TableHead className="w-[15%]">年度考核等级</TableHead>
-                <TableHead className="w-[16%]">操作</TableHead>
+                <TableHead className="w-[10%]">工号</TableHead>
+                <TableHead className="w-[12%]">部门</TableHead>
+                <TableHead className="w-[10%]">姓名</TableHead>
+                <TableHead className="w-[12%]">职位</TableHead>
+                <TableHead className="w-[10%]">职级</TableHead>
+                <TableHead className="w-[14%]">年度绩效考核分数</TableHead>
+                <TableHead className="w-[14%]">年度考核等级</TableHead>
+                <TableHead className="w-[18%]">操作</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -170,6 +193,13 @@ export default function Personal() {
                     <TableCell>{employee.department}</TableCell>
                     <TableCell>{employee.name}</TableCell>
                     <TableCell>{employee.position}</TableCell>
+                    <TableCell>
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                        ${employee.level === '主管' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'}
+                      `}>
+                        {employee.level}
+                      </span>
+                    </TableCell>
                     <TableCell>
                       <span className="font-semibold text-blue-600">{employee.annualScore}</span>
                     </TableCell>
@@ -199,7 +229,7 @@ export default function Personal() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                  <TableCell colSpan={8} className="text-center py-8 text-gray-500">
                     暂无符合条件的员工数据
                   </TableCell>
                 </TableRow>
