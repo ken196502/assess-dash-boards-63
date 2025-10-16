@@ -168,15 +168,16 @@ export function UnifiedKPITable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[15%]">类别</TableHead>
-              <TableHead className="w-[15%]">说明</TableHead>
-              <TableHead className="w-[12%]">指标</TableHead>
-              <TableHead className="w-[10%]">要求/目标</TableHead>
-              <TableHead className="w-[15%]">口径说明</TableHead>
-              <TableHead className="w-[10%] text-right">评价人</TableHead>
-              <TableHead className="w-[8%]">权重</TableHead>
-              <TableHead className="w-[10%]">评估分数</TableHead>
-              <TableHead className="w-[5%]">操作</TableHead>
+              <TableHead className="w-[12%]">类别</TableHead>
+              <TableHead className="w-[12%]">说明</TableHead>
+              <TableHead className="w-[10%]">指标</TableHead>
+              <TableHead className="w-[8%]">要求/目标</TableHead>
+              <TableHead className="w-[12%]">口径说明</TableHead>
+              <TableHead className="w-[8%] text-right">评价人</TableHead>
+              <TableHead className="w-[6%]">权重</TableHead>
+              <TableHead className="w-[8%]">评估分数</TableHead>
+              <TableHead className="w-[12%]">评估备注</TableHead>
+              <TableHead className="w-[12%]">操作</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -213,23 +214,23 @@ export function UnifiedKPITable({
                               </div>
                             </div>
                           ) : (
-                            <div className="space-y-3">
-                              <div className="text-lg font-bold text-gray-900">{category.name}</div>
-                              <div className="flex gap-2">
-                                <Button size="sm" variant="outline" onClick={() => onEditCategory(category.id)}>
-                                  <Edit className="w-4 h-4" />
+                            <div className="space-y-2">
+                              <div className="text-sm font-bold text-gray-900">{category.name}</div>
+                              <div className="flex gap-1">
+                                <Button size="sm" variant="outline" onClick={() => onEditCategory(category.id)} className="h-6 w-6 p-0">
+                                  <Edit className="w-3 h-3" />
                                 </Button>
-                                <Button size="sm" variant="outline" onClick={() => onCopyCategory(category.id)}>
-                                  <Copy className="w-4 h-4" />
+                                <Button size="sm" variant="outline" onClick={() => onCopyCategory(category.id)} className="h-6 w-6 p-0">
+                                  <Copy className="w-3 h-3" />
                                 </Button>
                                 {canRemoveCategory && (
                                   <Button
                                     size="sm"
                                     variant="outline"
                                     onClick={() => handleDeleteClick('category', category.id)}
-                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50 h-6 w-6 p-0"
                                   >
-                                    <Trash2 className="w-4 h-4" />
+                                    <Trash2 className="w-3 h-3" />
                                   </Button>
                                 )}
                               </div>
@@ -385,43 +386,45 @@ export function UnifiedKPITable({
                         {(() => {
                           const canFill = canFillScore(category.id, kpi.id, evalIndex)
                           return (
-                            <div className="space-y-1">
-                              <ScoreDialog
-                                score={evaluator.score}
-                                remark={evaluator.remark}
-                                onScoreChange={(score, remark) => {
-                                  onUpdateEvaluator(category.id, kpi.id, evaluator.id, "score", score)
-                                  onUpdateEvaluator(category.id, kpi.id, evaluator.id, "remark", remark)
-                                }}
+                            <ScoreDialog
+                              score={evaluator.score}
+                              remark={evaluator.remark}
+                              onScoreChange={(score, remark) => {
+                                onUpdateEvaluator(category.id, kpi.id, evaluator.id, "score", score)
+                                onUpdateEvaluator(category.id, kpi.id, evaluator.id, "remark", remark)
+                              }}
+                              disabled={!canFill}
+                            >
+                              <Button
+                                variant="ghost"
+                                className={`h-8 px-2 text-sm font-medium w-full ${
+                                  canFill 
+                                    ? "text-orange-600 hover:text-orange-700 hover:bg-orange-50" 
+                                    : "text-gray-400 cursor-not-allowed"
+                                }`}
                                 disabled={!canFill}
                               >
-                                <Button
-                                  variant="ghost"
-                                  className={`h-8 px-2 text-sm font-medium w-full ${
-                                    canFill 
-                                      ? "text-orange-600 hover:text-orange-700 hover:bg-orange-50" 
-                                      : "text-gray-400 cursor-not-allowed"
-                                  }`}
-                                  disabled={!canFill}
-                                >
-                                  {evaluator.score !== undefined ? evaluator.score.toFixed(1) : '--'}
-                                </Button>
-                              </ScoreDialog>
-                              {evaluator.remark && (
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <div className="text-xs text-gray-500 line-clamp-1 cursor-help">
-                                      {evaluator.remark}
-                                    </div>
-                                  </TooltipTrigger>
-                                  <TooltipContent className="max-w-sm">
-                                    <p className="text-sm">{evaluator.remark}</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              )}
-                            </div>
+                                {evaluator.score !== undefined ? `${evaluator.score} 分` : "评分"}
+                              </Button>
+                            </ScoreDialog>
                           )
                         })()}
+                      </TableCell>
+
+                      {/* 评估备注列 */}
+                      <TableCell>
+                        {evaluator.remark && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="text-xs text-gray-600 line-clamp-2 cursor-help">
+                                {evaluator.remark}
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent className="max-w-sm">
+                              <p className="text-sm">{evaluator.remark}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
                       </TableCell>
 
                       {/* 操作列 */}
