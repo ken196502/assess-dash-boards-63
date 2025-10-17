@@ -10,64 +10,76 @@ import { UnifiedKPITable } from "@/components/UnifiedKPITable"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Calendar } from "lucide-react"
+import { getDepartmentList, getDepartmentTemplates } from "@/data/templateData"
 
-const initialDepartments: Department[] = [
-  {
-    id: "business",
-    name: "业务部门",
-    description: "业务部门整体描述和说明",
+// 从部门模板生成初始部门数据
+const generateInitialDepartments = (): Department[] => {
+  const departmentNames = getDepartmentList()
+  
+  return departmentNames.map((deptName, index) => ({
+    id: `dept-${index + 1}`,
+    name: deptName,
+    description: `${deptName}整体描述和说明`,
     kpis: [], // 保持为空，因为现在使用categories结构
     categories: [
       {
-        id: "finance",
+        id: `${deptName}-finance`,
         name: "财务类",
         description: "反映类别真实营销典型的量化指标，需充分考虑业务实际因素",
         kpis: [
           {
-            id: "revenue",
+            id: `${deptName}-revenue`,
             name: "营业收入指标",
             target: "1000万元",
             evaluators: [
-              { id: "eval1", name: "张三", weight: "50%" },
-              { id: "eval2", name: "李四", weight: "50%" },
+              { id: `${deptName}-eval1`, name: "张三", weight: "50%" },
+              { id: `${deptName}-eval2`, name: "李四", weight: "50%" },
             ],
             description:
               "口径说明：与财务部报送总部口径一致，已扣除手续费支出及利息支出，不考虑协同收入，得分=实际完成值/目标值，120分封顶。",
           },
           {
-            id: "profit",
+            id: `${deptName}-profit`,
             name: "营业利润指标",
             target: "200万元",
-            evaluators: [{ id: "eval3", name: "张三", weight: "100%" }],
+            evaluators: [{ id: `${deptName}-eval3`, name: "张三", weight: "100%" }],
             description:
               "口径说明：与财务部报送总部口径一致，不考虑协同收入及所得税费用，得分=实际完成值/目标值，120分封顶。",
           },
         ],
       },
       {
-        id: "customer",
+        id: `${deptName}-customer`,
         name: "客户类",
         description: "体现客户的拓展、维护、项目储备、产品营销、并各有成效的相关指标",
         kpis: [
           {
-            id: "general",
+            id: `${deptName}-general`,
             name: "客户拓展指标",
             target: "新增50家",
             evaluators: [
-              { id: "eval6", name: "董事长", weight: "70%" },
-              { id: "eval7", name: "行政总裁", weight: "30%" },
+              { id: `${deptName}-eval6`, name: "董事长", weight: "70%" },
+              { id: `${deptName}-eval7`, name: "行政总裁", weight: "30%" },
             ],
             description: "客户拓展的具体考核标准和计算方式，包括新客户数量、客户质量等维度的综合评价。",
           },
         ],
       },
     ],
-  },
-]
+  }))
+}
+
+const initialDepartments: Department[] = generateInitialDepartments()
 
 export default function Index() {
   const [departments, setDepartments] = useState<Department[]>(initialDepartments)
   const [currentDepartmentId, setCurrentDepartmentId] = useState<string>(initialDepartments[0]?.id || "")
+  const [selectedYear, setSelectedYear] = useState<string>('2024')
+  
+  // 生成年度选项
+  const currentYear = new Date().getFullYear()
+  const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - i).map(year => year.toString())
   const [editingCategory, setEditingCategory] = useState<string | null>(null)
   const [showNewDeptDialog, setShowNewDeptDialog] = useState(false)
   const [newDeptName, setNewDeptName] = useState("")
@@ -396,11 +408,31 @@ export default function Index() {
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-6">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">部门考核管理</h1>
                 <p className="text-gray-600">管理各部门的绩效考核指标和评价标准</p>
               </div>
+              
+              {/* 年度筛选 */}
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-gray-500" />
+                <Select value={selectedYear} onValueChange={setSelectedYear}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue placeholder="选择年度" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {yearOptions.map((year) => (
+                      <SelectItem key={year} value={year}>
+                        {year}年
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between">
               <div className="flex gap-4 items-center">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium">当前部门：</span>
@@ -427,6 +459,43 @@ export default function Index() {
                     </Button>
                   )}
                 </div>
+              </div>
+              
+              <div className="flex gap-2">
+                <Button onClick={addCategory} variant="outline">
+                  <Plus className="w-4 h-4 mr-2" />
+                  添加类别
+                </Button>
+                
+                <Dialog open={showNewDeptDialog} onOpenChange={setShowNewDeptDialog}>
+                  <DialogTrigger asChild>
+                    <Button className="bg-blue-600 hover:bg-blue-700">
+                      <Building2 className="w-4 h-4 mr-2" />
+                      新增部门
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>新增部门</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-1">部门名称</label>
+                        <Input
+                          value={newDeptName}
+                          onChange={(e) => setNewDeptName(e.target.value)}
+                          placeholder="请输入部门名称"
+                        />
+                      </div>
+                      <div className="flex justify-end gap-2">
+                        <Button variant="outline" onClick={() => setShowNewDeptDialog(false)}>
+                          取消
+                        </Button>
+                        <Button onClick={addDepartment}>确认添加</Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
             </div>
           </div>
