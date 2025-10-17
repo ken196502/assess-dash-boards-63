@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Personal from "./pages/Personal";
 import PersonalDetail from "./pages/PersonalDetail";
 import TemplateManagement from "./pages/TemplateManagement";
+import DepartmentTemplateManagement from "./pages/DepartmentTemplateManagement";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,9 +30,10 @@ const App = () => (
               <div className="flex-1">
                 <Routes>
                   <Route path="/" element={<Index />} />
+                  <Route path="/department-template" element={<DepartmentTemplateManagement />} />
                   <Route path="/personal" element={<Personal />} />
                   <Route path="/personal/:id" element={<PersonalDetail />} />
-                  <Route path="/template" element={<TemplateManagement />} />
+                  <Route path="/template-management" element={<TemplateManagement />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

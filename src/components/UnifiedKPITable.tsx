@@ -36,6 +36,7 @@ interface UnifiedKPITableProps {
   onCopyCategory: (categoryId: string) => void
   canRemoveCategory: boolean
   onMoveEvaluator: (categoryId: string, kpiId: string, evaluatorId: string, direction: 'up' | 'down') => void
+  mode?: 'template' | 'usage' // 模板设置模式 或 使用模式
 }
 
 export function UnifiedKPITable({
@@ -54,7 +55,8 @@ export function UnifiedKPITable({
   onRemoveCategory,
   onCopyCategory,
   canRemoveCategory,
-  onMoveEvaluator
+  onMoveEvaluator,
+  mode = 'usage'
 }: UnifiedKPITableProps) {
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; type: 'category' | 'kpi' | 'evaluator'; id: string; categoryId?: string; kpiId?: string }>({
     open: false,
@@ -177,7 +179,7 @@ export function UnifiedKPITable({
               <TableHead className="w-[6%]">权重</TableHead>
               <TableHead className="w-[8%]">评估分数</TableHead>
               <TableHead className="w-[12%]">评估备注</TableHead>
-              <TableHead className="w-[12%]">操作</TableHead>
+              {mode === 'usage' && <TableHead className="w-[12%]">操作</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -427,44 +429,46 @@ export function UnifiedKPITable({
                         )}
                       </TableCell>
 
-                      {/* 操作列 */}
-                      <TableCell>
-                        <div className="flex gap-1">
-                          {!editingCategory && (
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => handleInvite(evaluator.name)}
-                              className="h-6 w-6 p-0 text-purple-500 hover:text-purple-700 hover:bg-purple-50"
-                              title="邀请评价"
-                            >
-                              <Mail className="h-3 w-3" />
-                            </Button>
-                          )}
-                          {editingCategory === category.id && evalIndex === kpi.evaluators.length - 1 && (
-                            <>
+                      {/* 操作列 - 仅在使用模式下显示 */}
+                      {mode === 'usage' && (
+                        <TableCell>
+                          <div className="flex gap-1">
+                            {!editingCategory && (
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                onClick={() => onAddEvaluator(category.id, kpi.id)}
-                                className="h-6 w-6 p-0 text-blue-500 hover:text-blue-700 hover:bg-blue-50"
-                                title="添加评价人"
+                                onClick={() => handleInvite(evaluator.name)}
+                                className="h-6 w-6 p-0 text-purple-500 hover:text-purple-700 hover:bg-purple-50"
+                                title="邀请评价"
                               >
-                                <UserPlus className="h-3 w-3" />
+                                <Mail className="h-3 w-3" />
                               </Button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => handleDeleteClick('kpi', kpi.id, category.id)}
-                                className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-                                title="删除指标"
-                              >
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                            </>
-                          )}
-                        </div>
-                      </TableCell>
+                            )}
+                            {editingCategory === category.id && evalIndex === kpi.evaluators.length - 1 && (
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => onAddEvaluator(category.id, kpi.id)}
+                                  className="h-6 w-6 p-0 text-blue-500 hover:text-blue-700 hover:bg-blue-50"
+                                  title="添加评价人"
+                                >
+                                  <UserPlus className="h-3 w-3" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => handleDeleteClick('kpi', kpi.id, category.id)}
+                                  className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                  title="删除指标"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        </TableCell>
+                      )}
                     </TableRow>
                   )
                   currentRowIndex++
@@ -542,6 +546,7 @@ export function UnifiedKPITable({
                         <TableCell>--</TableCell>
                         <TableCell>--</TableCell>
                         <TableCell></TableCell>
+                        {mode === 'usage' && <TableCell></TableCell>}
                       </TableRow>
                     )
                     currentRowIndex++
@@ -560,6 +565,7 @@ export function UnifiedKPITable({
                 {calculateTotalWeightedScore()}
               </TableCell>
               <TableCell></TableCell>
+              {mode === 'usage' && <TableCell></TableCell>}
             </TableRow>
           </TableBody>
         </Table>

@@ -2,10 +2,10 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Settings, Plus, Trash2 } from "lucide-react"
+import { Settings } from "lucide-react"
 import { AssessmentTemplate, TemplateItem } from "@/types/template"
+import { Category, KPI, Evaluator } from "@/types/assessment"
+import { DepartmentAssessmentTable } from "@/components/DepartmentAssessmentTable"
 import { toast } from "@/hooks/use-toast"
 
 const mockTemplates: AssessmentTemplate[] = [
@@ -25,40 +25,249 @@ const mockTemplates: AssessmentTemplate[] = [
   }
 ]
 
+// 将TemplateItem转换为Category格式
+const convertTemplateItemsToCategories = (items: TemplateItem[]): Category[] => {
+  const categoryMap = new Map<string, Category>()
+  
+  items.forEach(item => {
+    if (!categoryMap.has(item.category)) {
+      categoryMap.set(item.category, {
+        id: `cat-${item.category}`,
+        name: item.category,
+        description: item.description,
+        kpis: []
+      })
+    }
+    
+    const category = categoryMap.get(item.category)!
+    category.kpis.push({
+      id: item.id,
+      name: item.indicator,
+      target: item.target,
+      description: item.caliber,
+      evaluators: [{
+        id: `eval-${item.id}`,
+        name: item.evaluator,
+        weight: `${item.weight}%`,
+        score: undefined
+      }]
+    })
+  })
+  
+  return Array.from(categoryMap.values())
+}
+
+// 将Category格式转换回TemplateItem
+const convertCategoriesToTemplateItems = (categories: Category[]): TemplateItem[] => {
+  const items: TemplateItem[] = []
+  
+  categories.forEach(category => {
+    category.kpis.forEach(kpi => {
+      kpi.evaluators.forEach(evaluator => {
+        items.push({
+          id: kpi.id,
+          category: category.name,
+          description: category.description,
+          indicator: kpi.name,
+          target: kpi.target,
+          caliber: kpi.description,
+          evaluator: evaluator.name,
+          weight: parseInt(evaluator.weight.replace('%', ''))
+        })
+      })
+    })
+  })
+  
+  return items
+}
+
 export default function TemplateManagement() {
   const [templates] = useState<AssessmentTemplate[]>(mockTemplates)
   const [selectedTemplate, setSelectedTemplate] = useState<AssessmentTemplate | null>(null)
-  const [templateItems, setTemplateItems] = useState<TemplateItem[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const handleOpenSettings = (template: AssessmentTemplate) => {
     setSelectedTemplate(template)
-    setTemplateItems(template.items.length > 0 ? template.items : [])
+    setCategories(convertTemplateItemsToCategories(template.items))
     setIsDialogOpen(true)
   }
 
-  const handleAddItem = () => {
-    const newItem: TemplateItem = {
-      id: Date.now().toString(),
-      category: "",
-      description: "",
-      indicator: "",
-      target: "",
-      caliber: "",
-      evaluator: "",
-      weight: 0
-    }
-    setTemplateItems([...templateItems, newItem])
-  }
-
-  const handleDeleteItem = (id: string) => {
-    setTemplateItems(templateItems.filter(item => item.id !== id))
-  }
-
-  const handleUpdateItem = (id: string, field: keyof TemplateItem, value: string | number) => {
-    setTemplateItems(templateItems.map(item => 
-      item.id === id ? { ...item, [field]: value } : item
+  const handleUpdateCategory = (categoryId: string, field: keyof Category, value: string) => {
+    setCategories(categories.map(cat => 
+      cat.id === categoryId ? { ...cat, [field]: value } : cat
     ))
+  }
+
+  const handleUpdateKPI = (categoryId: string, kpiId: string, field: keyof KPI, value: string | number) => {
+    setCategories(categories.map(cat => {
+      if (cat.id === categoryId) {
+        return {
+          ...cat,
+          kpis: cat.kpis.map(kpi => 
+            kpi.id === kpiId ? { ...kpi, [field]: value } : kpi
+          )
+        }
+      }
+      return cat
+    }))
+  }
+
+  const handleUpdateEvaluator = (categoryId: string, kpiId: string, evaluatorId: string, field: keyof Evaluator, value: string | number) => {
+    setCategories(categories.map(cat => {
+      if (cat.id === categoryId) {
+        return {
+          ...cat,
+          kpis: cat.kpis.map(kpi => {
+            if (kpi.id === kpiId) {
+              return {
+                ...kpi,
+                evaluators: kpi.evaluators.map(evaluator => 
+                  evaluator.id === evaluatorId ? { ...evaluator, [field]: value } : evaluator
+                )
+              }
+            }
+            return kpi
+          })
+        }
+      }
+      return cat
+    }))
+  }
+
+  const handleAddEvaluator = (categoryId: string, kpiId: string) => {
+    setCategories(categories.map(cat => {
+      if (cat.id === categoryId) {
+        return {
+          ...cat,
+          kpis: cat.kpis.map(kpi => {
+            if (kpi.id === kpiId) {
+              return {
+                ...kpi,
+                evaluators: [
+                  ...kpi.evaluators,
+                  { 
+                    id: `eval-${Date.now()}`, 
+                    name: "", 
+                    weight: "0%",
+                    score: undefined 
+                  }
+                ]
+              }
+            }
+            return kpi
+          })
+        }
+      }
+      return cat
+    }))
+  }
+
+  const handleRemoveEvaluator = (categoryId: string, kpiId: string, evaluatorId: string) => {
+    setCategories(categories.map(cat => {
+      if (cat.id === categoryId) {
+        return {
+          ...cat,
+          kpis: cat.kpis.map(kpi => {
+            if (kpi.id === kpiId) {
+              return {
+                ...kpi,
+                evaluators: kpi.evaluators.filter(evaluator => evaluator.id !== evaluatorId)
+              }
+            }
+            return kpi
+          })
+        }
+      }
+      return cat
+    }))
+  }
+
+  const handleAddKPI = (categoryId: string) => {
+    setCategories(categories.map(cat => {
+      if (cat.id === categoryId) {
+        return {
+          ...cat,
+          kpis: [
+            ...cat.kpis,
+            {
+              id: `kpi-${Date.now()}`,
+              name: "",
+              target: "",
+              description: "",
+              evaluators: []
+            }
+          ]
+        }
+      }
+      return cat
+    }))
+  }
+
+  const handleRemoveKPI = (categoryId: string, kpiId: string) => {
+    setCategories(categories.map(cat => {
+      if (cat.id === categoryId) {
+        return {
+          ...cat,
+          kpis: cat.kpis.filter(kpi => kpi.id !== kpiId)
+        }
+      }
+      return cat
+    }))
+  }
+
+  const handleCopyCategory = (categoryId: string) => {
+    const category = categories.find(cat => cat.id === categoryId)
+    if (category) {
+      const newCategory: Category = {
+        ...category,
+        id: `cat-${Date.now()}`,
+        name: `${category.name} (副本)`,
+        kpis: category.kpis.map(kpi => ({
+          ...kpi,
+          id: `kpi-${Date.now()}-${Math.random()}`,
+          evaluators: kpi.evaluators.map(evaluator => ({
+            ...evaluator,
+            id: `eval-${Date.now()}-${Math.random()}`,
+            score: undefined
+          }))
+        }))
+      }
+      setCategories([...categories, newCategory])
+      toast({
+        title: "复制成功",
+        description: "类别已复制",
+      })
+    }
+  }
+
+  const handleRemoveCategory = (categoryId: string) => {
+    setCategories(categories.filter(cat => cat.id !== categoryId))
+  }
+
+  const handleMoveEvaluator = (categoryId: string, kpiId: string, evaluatorId: string, direction: 'up' | 'down') => {
+    setCategories(categories.map(cat => {
+      if (cat.id === categoryId) {
+        return {
+          ...cat,
+          kpis: cat.kpis.map(kpi => {
+            if (kpi.id === kpiId) {
+              const evaluators = [...kpi.evaluators]
+              const index = evaluators.findIndex(e => e.id === evaluatorId)
+              if (index !== -1) {
+                const newIndex = direction === 'up' ? index - 1 : index + 1
+                if (newIndex >= 0 && newIndex < evaluators.length) {
+                  [evaluators[index], evaluators[newIndex]] = [evaluators[newIndex], evaluators[index]]
+                }
+              }
+              return { ...kpi, evaluators }
+            }
+            return kpi
+          })
+        }
+      }
+      return cat
+    }))
   }
 
   const handleSave = () => {
@@ -116,7 +325,7 @@ export default function TemplateManagement() {
                           设置模板
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+                      <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
                           <DialogTitle>
                             设置模板 - {selectedTemplate?.department} / {selectedTemplate?.level}
@@ -124,118 +333,21 @@ export default function TemplateManagement() {
                         </DialogHeader>
                         
                         <div className="space-y-4">
-                          <div className="flex justify-between items-center">
-                            <h3 className="text-lg font-semibold">考核项目</h3>
-                            <Button onClick={handleAddItem} size="sm">
-                              <Plus className="w-4 h-4 mr-1" />
-                              添加项目
-                            </Button>
-                          </div>
-
-                          <div className="border rounded-lg overflow-hidden">
-                            <Table>
-                              <TableHeader>
-                                <TableRow>
-                                  <TableHead className="w-[12%]">类别</TableHead>
-                                  <TableHead className="w-[15%]">说明</TableHead>
-                                  <TableHead className="w-[12%]">指标</TableHead>
-                                  <TableHead className="w-[15%]">要求/目标</TableHead>
-                                  <TableHead className="w-[15%]">口径说明</TableHead>
-                                  <TableHead className="w-[12%]">评价人</TableHead>
-                                  <TableHead className="w-[10%]">权重(%)</TableHead>
-                                  <TableHead className="w-[9%]">操作</TableHead>
-                                </TableRow>
-                              </TableHeader>
-                              <TableBody>
-                                {templateItems.length > 0 ? (
-                                  templateItems.map((item) => (
-                                    <TableRow key={item.id}>
-                                      <TableCell>
-                                        <Input
-                                          value={item.category}
-                                          onChange={(e) => handleUpdateItem(item.id, 'category', e.target.value)}
-                                          placeholder="类别"
-                                          className="h-8"
-                                        />
-                                      </TableCell>
-                                      <TableCell>
-                                        <Input
-                                          value={item.description}
-                                          onChange={(e) => handleUpdateItem(item.id, 'description', e.target.value)}
-                                          placeholder="说明"
-                                          className="h-8"
-                                        />
-                                      </TableCell>
-                                      <TableCell>
-                                        <Input
-                                          value={item.indicator}
-                                          onChange={(e) => handleUpdateItem(item.id, 'indicator', e.target.value)}
-                                          placeholder="指标"
-                                          className="h-8"
-                                        />
-                                      </TableCell>
-                                      <TableCell>
-                                        <Input
-                                          value={item.target}
-                                          onChange={(e) => handleUpdateItem(item.id, 'target', e.target.value)}
-                                          placeholder="要求/目标"
-                                          className="h-8"
-                                        />
-                                      </TableCell>
-                                      <TableCell>
-                                        <Input
-                                          value={item.caliber}
-                                          onChange={(e) => handleUpdateItem(item.id, 'caliber', e.target.value)}
-                                          placeholder="口径说明"
-                                          className="h-8"
-                                        />
-                                      </TableCell>
-                                      <TableCell>
-                                        <Input
-                                          value={item.evaluator}
-                                          onChange={(e) => handleUpdateItem(item.id, 'evaluator', e.target.value)}
-                                          placeholder="评价人"
-                                          className="h-8"
-                                        />
-                                      </TableCell>
-                                      <TableCell>
-                                        <Input
-                                          type="number"
-                                          value={item.weight}
-                                          onChange={(e) => {
-                                            const val = parseInt(e.target.value) || 0
-                                            if (val >= 1 && val <= 100) {
-                                              handleUpdateItem(item.id, 'weight', val)
-                                            }
-                                          }}
-                                          placeholder="1-100"
-                                          className="h-8"
-                                          min={1}
-                                          max={100}
-                                        />
-                                      </TableCell>
-                                      <TableCell>
-                                        <Button
-                                          size="sm"
-                                          variant="ghost"
-                                          onClick={() => handleDeleteItem(item.id)}
-                                          className="text-red-600 hover:text-red-700"
-                                        >
-                                          <Trash2 className="w-4 h-4" />
-                                        </Button>
-                                      </TableCell>
-                                    </TableRow>
-                                  ))
-                                ) : (
-                                  <TableRow>
-                                    <TableCell colSpan={8} className="text-center py-8 text-gray-500">
-                                      暂无考核项目，请点击"添加项目"按钮
-                                    </TableCell>
-                                  </TableRow>
-                                )}
-                              </TableBody>
-                            </Table>
-                          </div>
+                          <DepartmentAssessmentTable
+                            categories={categories}
+                            onUpdateCategory={handleUpdateCategory}
+                            onUpdateKPI={handleUpdateKPI}
+                            onUpdateEvaluator={handleUpdateEvaluator}
+                            onAddEvaluator={handleAddEvaluator}
+                            onRemoveEvaluator={handleRemoveEvaluator}
+                            onAddKPI={handleAddKPI}
+                            onRemoveKPI={handleRemoveKPI}
+                            onRemoveCategory={handleRemoveCategory}
+                            onCopyCategory={handleCopyCategory}
+                            onMoveEvaluator={handleMoveEvaluator}
+                            canRemoveCategory={true}
+                            mode="template"
+                          />
 
                           <div className="flex justify-end gap-2 pt-4">
                             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>

@@ -16,6 +16,7 @@ interface DepartmentAssessmentTableProps {
   onMoveEvaluator?: (categoryId: string, kpiId: string, evaluatorId: string, direction: 'up' | 'down') => void
   canRemoveCategory?: boolean
   readOnly?: boolean
+  mode?: 'template' | 'usage' // 模板设置模式 或 使用模式
 }
 
 export function DepartmentAssessmentTable({
@@ -31,7 +32,8 @@ export function DepartmentAssessmentTable({
   onCopyCategory,
   onMoveEvaluator,
   canRemoveCategory = false,
-  readOnly = false
+  readOnly = false,
+  mode = 'usage'
 }: DepartmentAssessmentTableProps) {
   const [editingCategory, setEditingCategory] = useState<string | null>(null)
 
@@ -68,6 +70,7 @@ export function DepartmentAssessmentTable({
       onCopyCategory={onCopyCategory || noop}
       canRemoveCategory={canRemoveCategory}
       onMoveEvaluator={onMoveEvaluator || noop}
+      mode={mode}
     />
   )
 }
