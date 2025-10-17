@@ -427,36 +427,6 @@ export default function Index() {
                     </Button>
                   )}
                 </div>
-                <Dialog open={showNewDeptDialog} onOpenChange={setShowNewDeptDialog}>
-                  <DialogTrigger asChild>
-                    <Button className="bg-blue-600 hover:bg-blue-700">
-                      <Building2 className="w-4 h-4 mr-2" />
-                      新增部门
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>新增部门</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4 pt-4">
-                      <Input
-                        value={newDeptName}
-                        onChange={(e) => setNewDeptName(e.target.value)}
-                        placeholder="请输入部门名称"
-                      />
-                      <div className="flex justify-end space-x-2">
-                        <Button variant="outline" onClick={() => setShowNewDeptDialog(false)}>
-                          取消
-                        </Button>
-                        <Button onClick={addDepartment}>确认</Button>
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-                <Button onClick={addCategory} variant="outline">
-                  <Plus className="w-4 h-4 mr-2" />
-                  新增类别
-                </Button>
               </div>
             </div>
           </div>
@@ -479,6 +449,7 @@ export default function Index() {
               onCopyCategory={copyCategory}
               canRemoveCategory={currentDepartment.categories.length > 1}
               onMoveEvaluator={moveEvaluator}
+              mode="usage"
             />
           )}
         </div>

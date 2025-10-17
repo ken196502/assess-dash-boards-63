@@ -199,7 +199,7 @@ export function UnifiedKPITable({
                       {/* 类别列 - 只在类别的第一行显示 */}
                       {currentRowIndex === categoryRowStart && (
                         <TableCell rowSpan={categoryRowSpan} className="align-top border-r">
-                          {editingCategory === category.id ? (
+                          {mode === 'template' && editingCategory === category.id ? (
                             <div className="space-y-3">
                               <Input
                                 value={category.name}
@@ -218,24 +218,26 @@ export function UnifiedKPITable({
                           ) : (
                             <div className="space-y-2">
                               <div className="text-sm font-bold text-gray-900">{category.name}</div>
-                              <div className="flex gap-1">
-                                <Button size="sm" variant="outline" onClick={() => onEditCategory(category.id)} className="h-6 w-6 p-0">
-                                  <Edit className="w-3 h-3" />
-                                </Button>
-                                <Button size="sm" variant="outline" onClick={() => onCopyCategory(category.id)} className="h-6 w-6 p-0">
-                                  <Copy className="w-3 h-3" />
-                                </Button>
-                                {canRemoveCategory && (
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => handleDeleteClick('category', category.id)}
-                                    className="text-red-600 hover:text-red-700 hover:bg-red-50 h-6 w-6 p-0"
-                                  >
-                                    <Trash2 className="w-3 h-3" />
+                              {mode === 'template' && (
+                                <div className="flex gap-1">
+                                  <Button size="sm" variant="outline" onClick={() => onEditCategory(category.id)} className="h-6 w-6 p-0">
+                                    <Edit className="w-3 h-3" />
                                   </Button>
-                                )}
-                              </div>
+                                  <Button size="sm" variant="outline" onClick={() => onCopyCategory(category.id)} className="h-6 w-6 p-0">
+                                    <Copy className="w-3 h-3" />
+                                  </Button>
+                                  {canRemoveCategory && (
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => handleDeleteClick('category', category.id)}
+                                      className="text-red-600 hover:text-red-700 hover:bg-red-50 h-6 w-6 p-0"
+                                    >
+                                      <Trash2 className="w-3 h-3" />
+                                    </Button>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           )}
                         </TableCell>
@@ -244,7 +246,7 @@ export function UnifiedKPITable({
                       {/* 说明列 - 只在类别的第一行显示 */}
                       {currentRowIndex === categoryRowStart && (
                         <TableCell rowSpan={categoryRowSpan} className="align-top border-r">
-                          {editingCategory === category.id ? (
+                          {mode === 'template' && editingCategory === category.id ? (
                             <Textarea
                               value={category.description}
                               onChange={(e) => onUpdateCategory(category.id, "description", e.target.value)}
@@ -260,7 +262,7 @@ export function UnifiedKPITable({
                       {/* 指标列 - 只在KPI的第一行显示 */}
                       {evalIndex === 0 && (
                         <TableCell rowSpan={kpiRowSpan} className="font-medium align-top">
-                          {editingCategory === category.id ? (
+                          {mode === 'template' && editingCategory === category.id ? (
                             <Input
                               value={kpi.name}
                               onChange={(e) => onUpdateKPI(category.id, kpi.id, "name", e.target.value)}
@@ -275,7 +277,7 @@ export function UnifiedKPITable({
                       {/* 要求/目标列 - 只在KPI的第一行显示 */}
                       {evalIndex === 0 && (
                         <TableCell rowSpan={kpiRowSpan} className="align-top">
-                          {editingCategory === category.id ? (
+                          {mode === 'template' && editingCategory === category.id ? (
                             <Input
                               value={kpi.target}
                               onChange={(e) => onUpdateKPI(category.id, kpi.id, "target", e.target.value)}
@@ -290,7 +292,7 @@ export function UnifiedKPITable({
                       {/* 口径说明列 - 只在KPI的第一行显示 */}
                       {evalIndex === 0 && (
                         <TableCell rowSpan={kpiRowSpan} className="align-top">
-                          {editingCategory === category.id ? (
+                          {mode === 'template' && editingCategory === category.id ? (
                             <Textarea
                               value={kpi.description}
                               onChange={(e) => onUpdateKPI(category.id, kpi.id, "description", e.target.value)}
@@ -314,7 +316,7 @@ export function UnifiedKPITable({
 
                       {/* 评价人列 */}
                       <TableCell className="text-right">
-                        {editingCategory === category.id ? (
+                        {mode === 'template' && editingCategory === category.id ? (
                           <div className="flex items-center gap-2">
                             <div className="flex flex-col gap-1">
                               <Button
@@ -360,7 +362,7 @@ export function UnifiedKPITable({
 
                       {/* 权重列 */}
                       <TableCell>
-                        {editingCategory === category.id ? (
+                        {mode === 'template' && editingCategory === category.id ? (
                           <Input
                             type="number"
                             min="1"
@@ -433,39 +435,15 @@ export function UnifiedKPITable({
                       {mode === 'usage' && (
                         <TableCell>
                           <div className="flex gap-1">
-                            {!editingCategory && (
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => handleInvite(evaluator.name)}
-                                className="h-6 w-6 p-0 text-purple-500 hover:text-purple-700 hover:bg-purple-50"
-                                title="邀请评价"
-                              >
-                                <Mail className="h-3 w-3" />
-                              </Button>
-                            )}
-                            {editingCategory === category.id && evalIndex === kpi.evaluators.length - 1 && (
-                              <>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => onAddEvaluator(category.id, kpi.id)}
-                                  className="h-6 w-6 p-0 text-blue-500 hover:text-blue-700 hover:bg-blue-50"
-                                  title="添加评价人"
-                                >
-                                  <UserPlus className="h-3 w-3" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => handleDeleteClick('kpi', kpi.id, category.id)}
-                                  className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-                                  title="删除指标"
-                                >
-                                  <Trash2 className="h-3 w-3" />
-                                </Button>
-                              </>
-                            )}
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleInvite(evaluator.name)}
+                              className="h-6 w-6 p-0 text-purple-500 hover:text-purple-700 hover:bg-purple-50"
+                              title="邀请评价"
+                            >
+                              <Mail className="h-3 w-3" />
+                            </Button>
                           </div>
                         </TableCell>
                       )}
