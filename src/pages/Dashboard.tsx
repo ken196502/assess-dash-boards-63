@@ -24,12 +24,12 @@ const departmentScores = [
   { name: '财务部门', score: 88, target: 82, completed: 11, total: 12 },
 ]
 
-// 部门维度数据
+// 部门维度数据 - 绩效分布
 const departmentKpiData = [
-  { name: '已完成', value: 8, color: '#10B981' },
-  { name: '进行中', value: 3, color: '#F59E0B' },
-  { name: '未开始', value: 1, color: '#EF4444' },
-  { name: '已逾期', value: 0, color: '#8B5CF6' },
+  { name: 'A', value: 1, color: '#10B981' },
+  { name: 'B', value: 2, color: '#3B82F6' },
+  { name: 'C', value: 1, color: '#F59E0B' },
+  { name: 'D', value: 0, color: '#EF4444' },
 ]
 
 const departmentPerformanceData = [
@@ -40,12 +40,12 @@ const departmentPerformanceData = [
   { range: '60以下', count: 0, percentage: 0 },
 ]
 
-// 个人维度数据
+// 个人维度数据 - 绩效分布
 const personalKpiData = [
-  { name: '已完成', value: 45, color: '#10B981' },
-  { name: '进行中', value: 25, color: '#F59E0B' },
-  { name: '未开始', value: 15, color: '#EF4444' },
-  { name: '已逾期', value: 8, color: '#8B5CF6' },
+  { name: 'A', value: 12, color: '#10B981' },
+  { name: 'B', value: 28, color: '#3B82F6' },
+  { name: 'C', value: 24, color: '#F59E0B' },
+  { name: 'D', value: 16, color: '#EF4444' },
 ]
 
 const personalPerformanceData = [
@@ -189,12 +189,12 @@ export default function Dashboard() {
 
         {/* 图表区域 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* KPI完成状态 */}
+          {/* 绩效分布 */}
           <Card>
             <CardHeader>
-              <CardTitle>KPI完成状态</CardTitle>
+              <CardTitle>绩效分布</CardTitle>
               <CardDescription>
-                {activeTab === 'department' ? '部门KPI完成状态分布' : '个人KPI完成状态分布'}
+                {activeTab === 'department' ? '部门绩效等级分布' : '个人绩效等级分布'}
               </CardDescription>
             </CardHeader>
             <CardContent>
