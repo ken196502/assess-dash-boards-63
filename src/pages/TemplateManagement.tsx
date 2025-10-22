@@ -113,7 +113,7 @@ export default function TemplateManagement() {
     }))
   }
 
-  const handleUpdateEvaluator = (categoryId: string, kpiId: string, evaluatorId: string, field: keyof Evaluator, value: string | number) => {
+  const handleUpdateEvaluator = (categoryId: string, kpiId: string, evaluatorId: string, field: keyof Evaluator, value: string | number | boolean) => {
     setCategories(categories.map(cat => {
       if (cat.id === categoryId) {
         return {

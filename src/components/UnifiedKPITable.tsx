@@ -27,7 +27,7 @@ interface UnifiedKPITableProps {
   onCancelEdit: () => void
   onUpdateCategory: (categoryId: string, field: keyof Category, value: string) => void
   onUpdateKPI: (categoryId: string, kpiId: string, field: keyof KPI, value: string | number) => void
-  onUpdateEvaluator: (categoryId: string, kpiId: string, evaluatorId: string, field: keyof Evaluator, value: string | number) => void
+  onUpdateEvaluator: (categoryId: string, kpiId: string, evaluatorId: string, field: keyof Evaluator, value: string | number | boolean) => void
   onAddEvaluator: (categoryId: string, kpiId: string) => void
   onRemoveEvaluator: (categoryId: string, kpiId: string, evaluatorId: string) => void
   onAddKPI: (categoryId: string) => void
@@ -63,9 +63,20 @@ export function UnifiedKPITable({
     type: 'category',
     id: '',
   })
-  const [inviteDialog, setInviteDialog] = useState<{ open: boolean; name: string }>({
+  const [inviteDialog, setInviteDialog] = useState<{ 
+    open: boolean
+    name: string
+    categoryId: string
+    kpiId: string
+    evaluatorId: string
+    markAllSameName: boolean
+  }>({
     open: false,
     name: '',
+    categoryId: '',
+    kpiId: '',
+    evaluatorId: '',
+    markAllSameName: false,
   })
   
   
@@ -107,16 +118,52 @@ export function UnifiedKPITable({
   }
 
   // 处理邀请评价
-  const handleInvite = (evaluatorName: string) => {
-    setInviteDialog({ open: true, name: evaluatorName })
+  const handleInvite = (categoryId: string, kpiId: string, evaluatorId: string, evaluatorName: string) => {
+    setInviteDialog({ 
+      open: true, 
+      name: evaluatorName,
+      categoryId,
+      kpiId,
+      evaluatorId,
+      markAllSameName: false
+    })
   }
 
   const confirmInvite = () => {
-    toast({
-      title: "已发送邀请",
-      description: `已邀请${inviteDialog.name}进行评价`,
+    const { categoryId, kpiId, evaluatorId, name, markAllSameName } = inviteDialog
+    
+    if (markAllSameName) {
+      // 标记所有同名评价人为已邀请
+      categories.forEach(cat => {
+        cat.kpis.forEach(k => {
+          k.evaluators.forEach(ev => {
+            if (ev.name === name) {
+              onUpdateEvaluator(cat.id, k.id, ev.id, 'invited', true)
+            }
+          })
+        })
+      })
+      toast({
+        title: "已发送邀请",
+        description: `已邀请所有"${name}"进行评价`,
+      })
+    } else {
+      // 只标记当前评价人
+      onUpdateEvaluator(categoryId, kpiId, evaluatorId, 'invited', true)
+      toast({
+        title: "已发送邀请",
+        description: `已邀请${name}进行评价`,
+      })
+    }
+    
+    setInviteDialog({ 
+      open: false, 
+      name: '',
+      categoryId: '',
+      kpiId: '',
+      evaluatorId: '',
+      markAllSameName: false
     })
-    setInviteDialog({ open: false, name: '' })
   }
 
   const handleDeleteClick = (type: 'category' | 'kpi' | 'evaluator', id: string, categoryId?: string, kpiId?: string) => {
@@ -170,15 +217,16 @@ export function UnifiedKPITable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[12%]">类别</TableHead>
-              <TableHead className="w-[12%]">说明</TableHead>
-              <TableHead className="w-[10%]">指标</TableHead>
-              <TableHead className="w-[8%]">要求/目标</TableHead>
-              <TableHead className="w-[12%]">口径说明</TableHead>
+              <TableHead className="w-[11%]">类别</TableHead>
+              <TableHead className="w-[11%]">说明</TableHead>
+              <TableHead className="w-[9%]">指标</TableHead>
+              <TableHead className="w-[7%]">要求/目标</TableHead>
+              <TableHead className="w-[11%]">口径说明</TableHead>
               <TableHead className="w-[8%] text-right">评价人</TableHead>
               <TableHead className="w-[6%]">权重</TableHead>
-              <TableHead className="w-[8%]">评估分数</TableHead>
-              <TableHead className="w-[12%]">评估备注</TableHead>
+              <TableHead className="w-[7%]">评估分数</TableHead>
+              <TableHead className="w-[11%]">评估备注</TableHead>
+              {mode === 'usage' && <TableHead className="w-[7%]">已邀请</TableHead>}
               {mode === 'usage' && <TableHead className="w-[12%]">操作</TableHead>}
             </TableRow>
           </TableHeader>
@@ -431,6 +479,17 @@ export function UnifiedKPITable({
                         )}
                       </TableCell>
 
+                      {/* 已邀请列 - 仅在使用模式下显示 */}
+                      {mode === 'usage' && (
+                        <TableCell>
+                          <div className="flex justify-center">
+                            {evaluator.invited && (
+                              <span className="text-green-600 font-bold">✓</span>
+                            )}
+                          </div>
+                        </TableCell>
+                      )}
+
                       {/* 操作列 - 仅在使用模式下显示 */}
                       {mode === 'usage' && (
                         <TableCell>
@@ -438,7 +497,7 @@ export function UnifiedKPITable({
                             <Button
                               size="sm"
                               variant="ghost"
-                              onClick={() => handleInvite(evaluator.name)}
+                              onClick={() => handleInvite(category.id, kpi.id, evaluator.id, evaluator.name)}
                               className="h-6 w-6 p-0 text-purple-500 hover:text-purple-700 hover:bg-purple-50"
                               title="邀请评价"
                             >
@@ -537,12 +596,20 @@ export function UnifiedKPITable({
             {/* 总分行 */}
             <TableRow className="bg-blue-50 font-medium">
               <TableCell colSpan={7} className="text-right text-blue-800">
-                按权重计算总分：
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="cursor-help">总分：</span>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-sm">
+                    <p className="text-sm">sum(正数评分×权重)-sum(abs(负数评分))</p>
+                  </TooltipContent>
+                </Tooltip>
               </TableCell>
               <TableCell className="text-blue-800 font-bold">
                 {calculateTotalWeightedScore()}
               </TableCell>
               <TableCell></TableCell>
+              {mode === 'usage' && <TableCell></TableCell>}
               {mode === 'usage' && <TableCell></TableCell>}
             </TableRow>
           </TableBody>
@@ -586,7 +653,18 @@ export function UnifiedKPITable({
           <AlertDialogHeader>
             <AlertDialogTitle>确认邀请</AlertDialogTitle>
             <AlertDialogDescription>
-              发送邀请后无法撤回，确定发送吗？
+              <div className="space-y-3">
+                <p>确定邀请 <span className="font-medium">{inviteDialog.name}</span> 进行评价吗？</p>
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={inviteDialog.markAllSameName}
+                    onChange={(e) => setInviteDialog({ ...inviteDialog, markAllSameName: e.target.checked })}
+                    className="w-4 h-4 rounded border-gray-300"
+                  />
+                  <span className="text-sm">同时标记所有"{inviteDialog.name}"的评估为已邀请</span>
+                </label>
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

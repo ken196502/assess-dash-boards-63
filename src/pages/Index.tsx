@@ -136,7 +136,7 @@ export default function Index() {
     kpiId: string,
     evaluatorId: string,
     field: keyof Evaluator,
-    value: string | number,
+    value: string | number | boolean,
   ) => {
     setDepartments((prev) =>
       prev.map((dept) =>
