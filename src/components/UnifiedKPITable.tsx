@@ -225,7 +225,7 @@ export function UnifiedKPITable({
               <TableHead className="w-[8%] text-right">评价人</TableHead>
               <TableHead className="w-[6%]">权重</TableHead>
               <TableHead className="w-[7%]">评估分数</TableHead>
-              <TableHead className="w-[11%]">评估备注</TableHead>
+              {mode === 'usage' && <TableHead className="w-[11%]">评估备注</TableHead>}
               {mode === 'usage' && <TableHead className="w-[7%]">已邀请</TableHead>}
               {mode === 'usage' && <TableHead className="w-[12%]">操作</TableHead>}
             </TableRow>
@@ -446,6 +446,7 @@ export function UnifiedKPITable({
                                 onUpdateEvaluator(category.id, kpi.id, evaluator.id, "remark", remark)
                               }}
                               disabled={!canFill}
+                              showRemark={mode === 'usage'}
                             >
                               <Button
                                 variant="ghost"
@@ -456,28 +457,32 @@ export function UnifiedKPITable({
                                 }`}
                                 disabled={!canFill}
                               >
-                                {evaluator.score !== undefined ? `${evaluator.score} 分` : "评分"}
+                                {evaluator.score !== undefined 
+                                  ? `${evaluator.score} 分` 
+                                  : mode === 'template' ? "评分(试算)" : "评分"}
                               </Button>
                             </ScoreDialog>
                           )
                         })()}
                       </TableCell>
 
-                      {/* 评估备注列 */}
-                      <TableCell>
-                        {evaluator.remark && (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div className="text-xs text-gray-600 line-clamp-2 cursor-help">
-                                {evaluator.remark}
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipContent className="max-w-sm">
-                              <p className="text-sm">{evaluator.remark}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        )}
-                      </TableCell>
+                      {/* 评估备注列 - 仅在使用模式下显示 */}
+                      {mode === 'usage' && (
+                        <TableCell>
+                          {evaluator.remark && (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="text-xs text-gray-600 line-clamp-2 cursor-help">
+                                  {evaluator.remark}
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent className="max-w-sm">
+                                <p className="text-sm">{evaluator.remark}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          )}
+                        </TableCell>
+                      )}
 
                       {/* 已邀请列 - 仅在使用模式下显示 */}
                       {mode === 'usage' && (
@@ -598,7 +603,9 @@ export function UnifiedKPITable({
               <TableCell colSpan={7} className="text-right text-blue-800">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <span className="cursor-help">总分：</span>
+                    <span className="cursor-help">
+                      {mode === 'template' ? '总分(试算)：' : '总分：'}
+                    </span>
                   </TooltipTrigger>
                   <TooltipContent className="max-w-sm">
                     <p className="text-sm">sum(正数评分×权重)-sum(abs(负数评分))</p>
@@ -608,7 +615,7 @@ export function UnifiedKPITable({
               <TableCell className="text-blue-800 font-bold">
                 {calculateTotalWeightedScore()}
               </TableCell>
-              <TableCell></TableCell>
+              {mode === 'usage' && <TableCell></TableCell>}
               {mode === 'usage' && <TableCell></TableCell>}
               {mode === 'usage' && <TableCell></TableCell>}
             </TableRow>

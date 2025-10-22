@@ -12,9 +12,10 @@ interface ScoreDialogProps {
   onScoreChange: (score: number, remark: string) => void
   children: React.ReactNode
   disabled?: boolean
+  showRemark?: boolean // 是否显示备注框
 }
 
-export function ScoreDialog({ score, remark, onScoreChange, children, disabled = false }: ScoreDialogProps) {
+export function ScoreDialog({ score, remark, onScoreChange, children, disabled = false, showRemark = true }: ScoreDialogProps) {
   const [open, setOpen] = useState(false)
   const [tempScore, setTempScore] = useState(score?.toString() || "")
   const [tempRemark, setTempRemark] = useState(remark || "")
@@ -44,7 +45,7 @@ export function ScoreDialog({ score, remark, onScoreChange, children, disabled =
       </DialogTrigger>
       <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
-          <DialogTitle>输入评估分数</DialogTitle>
+          <DialogTitle>{showRemark ? '输入评估分数' : '输入评估分数(试算)'}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 pt-4">
           <div className="space-y-2">
@@ -61,16 +62,18 @@ export function ScoreDialog({ score, remark, onScoreChange, children, disabled =
             />
             <p className="text-sm text-muted-foreground">负数不乘以权重</p>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="remark">备注</Label>
-            <Textarea
-              id="remark"
-              value={tempRemark}
-              onChange={(e) => setTempRemark(e.target.value)}
-              placeholder="请输入备注"
-              rows={3}
-            />
-          </div>
+          {showRemark && (
+            <div className="space-y-2">
+              <Label htmlFor="remark">备注</Label>
+              <Textarea
+                id="remark"
+                value={tempRemark}
+                onChange={(e) => setTempRemark(e.target.value)}
+                placeholder="请输入备注"
+                rows={3}
+              />
+            </div>
+          )}
           <div className="flex justify-end space-x-2">
             <Button variant="outline" onClick={handleCancel}>
               取消
