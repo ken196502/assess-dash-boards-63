@@ -113,52 +113,15 @@ export default function UnifiedTemplateManagement() {
                   )}
                   <TableCell className="text-sm text-gray-600">{template.changeLog}</TableCell>
                   <TableCell>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleEditTemplate(template.id)}
-                        className="text-blue-600 hover:text-blue-700"
-                      >
-                        <Settings className="w-4 h-4 mr-1" />
-                        编辑
-                      </Button>
-                      
-                      {activeTab === 'personal' && (
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              size="sm"
-                              className="bg-green-600 hover:bg-green-700"
-                            >
-                              <Play className="w-4 h-4 mr-1" />
-                              启动
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>确认启动考核模板</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                启动后自动通知该部门所有评价人，是否继续？
-                                <br />
-                                <span className="text-sm text-gray-500 mt-2 block">
-                                  模板：{template.department} - {template.level}
-                                </span>
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>取消</AlertDialogCancel>
-                              <AlertDialogAction 
-                                onClick={() => handleLaunchTemplate(template)}
-                                className="bg-green-600 hover:bg-green-700"
-                              >
-                                确认启动
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      )}
-                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleEditTemplate(template.id)}
+                      className="text-blue-600 hover:text-blue-700"
+                    >
+                      <Settings className="w-4 h-4 mr-1" />
+                      编辑
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

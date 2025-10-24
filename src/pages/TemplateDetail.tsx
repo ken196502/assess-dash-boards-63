@@ -8,6 +8,8 @@ import { Category, KPI, Evaluator } from "@/types/assessment"
 import { UnifiedKPITable } from "@/components/UnifiedKPITable"
 import { toast } from "@/hooks/use-toast"
 import { getTemplateById } from "@/data/templateData"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Badge } from "@/components/ui/badge"
 
 // 模拟数据
 const mockDepartmentTemplate: Category[] = [
@@ -73,6 +75,14 @@ export default function TemplateDetail() {
 
   const [categories, setCategories] = useState<Category[]>(isNew ? [] : mockDepartmentTemplate)
   const [editingCategory, setEditingCategory] = useState<string | null>(null)
+  
+  // 年份选项（当年及倒数3年）
+  const currentYear = new Date().getFullYear()
+  const yearOptions = Array.from({ length: 4 }, (_, i) => currentYear - i)
+  const [selectedYear, setSelectedYear] = useState<number>(currentYear)
+  
+  // 模拟已使用次数
+  const [usageCount] = useState<number>(Math.floor(Math.random() * 20))
 
   const handleBack = () => {
     navigate('/template-management')
@@ -335,7 +345,7 @@ export default function TemplateDetail() {
           {/* 模板基本信息 */}
           <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
             <h2 className="text-lg font-semibold mb-4">基本信息</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">部门名称</label>
                 <Input
@@ -357,6 +367,29 @@ export default function TemplateDetail() {
                   </select>
                 </div>
               )}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">年份</label>
+                <Select value={selectedYear.toString()} onValueChange={(value) => setSelectedYear(Number(value))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {yearOptions.map((year) => (
+                      <SelectItem key={year} value={year.toString()}>
+                        {year}年
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">已使用次数</label>
+                <div className="flex items-center h-10 px-3 py-2 border border-gray-300 rounded-md bg-gray-50">
+                  <Badge variant="secondary" className="text-base">
+                    {usageCount} 次
+                  </Badge>
+                </div>
+              </div>
             </div>
           </div>
         </div>
