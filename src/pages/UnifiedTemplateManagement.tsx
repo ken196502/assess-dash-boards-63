@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { Settings, Plus, FileText, Play } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Settings, Plus, FileText, Copy } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { toast } from "@/hooks/use-toast"
@@ -24,9 +25,14 @@ import { templateData } from "@/data/templateData"
 export default function UnifiedTemplateManagement() {
   const [templates] = useState<Template[]>(templateData)
   const [activeTab, setActiveTab] = useState<'department' | 'personal'>('department')
+  const [selectedYear, setSelectedYear] = useState<string>("2025")
   const navigate = useNavigate()
 
-  const filteredTemplates = templates.filter(template => template.type === activeTab)
+  const filteredTemplates = templates.filter(template => {
+    const matchesType = template.type === activeTab
+    const matchesYear = template.version.startsWith(selectedYear)
+    return matchesType && matchesYear
+  })
 
   const handleEditTemplate = (templateId: string) => {
     navigate(`/template-detail/${templateId}`)
@@ -36,11 +42,10 @@ export default function UnifiedTemplateManagement() {
     navigate(`/template-detail/new?type=${activeTab}`)
   }
 
-  const handleLaunchTemplate = (template: Template) => {
-    // 模拟启动模板的逻辑
+  const handleCopyTemplate = (template: Template) => {
     toast({
-      title: "启动成功",
-      description: `${template.department}${activeTab === 'department' ? '部门' : `${template.level}个人`}考核模板已启动，相关评价人将收到通知`,
+      title: "复制成功",
+      description: `已复制 ${template.department}${activeTab === 'department' ? '部门' : `${template.level}个人`}考核模板`,
     })
   }
 
@@ -63,30 +68,46 @@ export default function UnifiedTemplateManagement() {
             </Button>
           </div>
 
-          {/* 标签页切换 */}
-          <div className="flex space-x-1 rounded-lg bg-gray-100 p-1 mb-6">
-            <button
-              onClick={() => setActiveTab('department')}
-              className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                activeTab === 'department'
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <FileText className="w-4 h-4 mr-2" />
-              部门考核模板
-            </button>
-            <button
-              onClick={() => setActiveTab('personal')}
-              className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                activeTab === 'personal'
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <FileText className="w-4 h-4 mr-2" />
-              个人考核模板
-            </button>
+          {/* 标签页切换和年份筛选 */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex space-x-1 rounded-lg bg-gray-100 p-1">
+              <button
+                onClick={() => setActiveTab('department')}
+                className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === 'department'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <FileText className="w-4 h-4 mr-2" />
+                部门考核模板
+              </button>
+              <button
+                onClick={() => setActiveTab('personal')}
+                className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === 'personal'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <FileText className="w-4 h-4 mr-2" />
+                个人考核模板
+              </button>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">年份：</span>
+              <Select value={selectedYear} onValueChange={setSelectedYear}>
+                <SelectTrigger className="w-[120px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="2025">2025</SelectItem>
+                  <SelectItem value="2024">2024</SelectItem>
+                  <SelectItem value="2023">2023</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
 
@@ -98,7 +119,7 @@ export default function UnifiedTemplateManagement() {
                 {activeTab === 'personal' && (
                   <TableHead className="w-[12%]">职级</TableHead>
                 )}
-                <TableHead className="w-[20%]">当前版本</TableHead>
+                <TableHead className="w-[20%]">版本</TableHead>
                 <TableHead className="w-[30%]">变动日志</TableHead>
                 <TableHead className="w-[18%]">操作</TableHead>
               </TableRow>
@@ -115,20 +136,31 @@ export default function UnifiedTemplateManagement() {
                     </TableCell>
                   )}
                   <TableCell className="text-sm">
-                    <span className="font-medium text-gray-900">{template.version}</span>
+                    <span className="font-medium text-gray-900">{template.version.substring(0, 4)}</span>
                     <span className="text-gray-500">（已用{template.usageCount}次）</span>
                   </TableCell>
                   <TableCell className="text-sm text-gray-600">{template.changeLog}</TableCell>
                   <TableCell>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleEditTemplate(template.id)}
-                      className="text-blue-600 hover:text-blue-700"
-                    >
-                      <Settings className="w-4 h-4 mr-1" />
-                      编辑
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleEditTemplate(template.id)}
+                        className="text-blue-600 hover:text-blue-700"
+                      >
+                        <Settings className="w-4 h-4 mr-1" />
+                        编辑
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleCopyTemplate(template)}
+                        className="text-gray-600 hover:text-gray-700"
+                      >
+                        <Copy className="w-4 h-4 mr-1" />
+                        复制
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
