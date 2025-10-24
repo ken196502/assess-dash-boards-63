@@ -15,6 +15,8 @@ interface Template {
   level?: '员工' | '主管'
   changeLog: string
   lastModified: string
+  version: string
+  usageCount: number
 }
 
 import { templateData } from "@/data/templateData"
@@ -92,12 +94,13 @@ export default function UnifiedTemplateManagement() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[25%]">部门</TableHead>
+                <TableHead className="w-[20%]">部门</TableHead>
                 {activeTab === 'personal' && (
-                  <TableHead className="w-[15%]">职级</TableHead>
+                  <TableHead className="w-[12%]">职级</TableHead>
                 )}
-                <TableHead className="w-[35%]">变动日志</TableHead>
-                <TableHead className="w-[25%]">操作</TableHead>
+                <TableHead className="w-[20%]">当前版本</TableHead>
+                <TableHead className="w-[30%]">变动日志</TableHead>
+                <TableHead className="w-[18%]">操作</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -111,6 +114,10 @@ export default function UnifiedTemplateManagement() {
                       </Badge>
                     </TableCell>
                   )}
+                  <TableCell className="text-sm">
+                    <span className="font-medium text-gray-900">{template.version}</span>
+                    <span className="text-gray-500">（已用{template.usageCount}次）</span>
+                  </TableCell>
                   <TableCell className="text-sm text-gray-600">{template.changeLog}</TableCell>
                   <TableCell>
                     <Button
@@ -127,7 +134,7 @@ export default function UnifiedTemplateManagement() {
               ))}
               {filteredTemplates.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={activeTab === 'personal' ? 4 : 3} className="text-center py-8 text-gray-500">
+                  <TableCell colSpan={activeTab === 'personal' ? 5 : 4} className="text-center py-8 text-gray-500">
                     暂无{getTypeLabel(activeTab)}模板，
                     <Button variant="link" onClick={handleCreateTemplate} className="p-0 ml-1">
                       立即创建

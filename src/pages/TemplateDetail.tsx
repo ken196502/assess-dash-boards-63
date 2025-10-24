@@ -384,10 +384,11 @@ export default function TemplateDetail() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">已使用次数</label>
-                <div className="flex items-center h-10 px-3 py-2 border border-gray-300 rounded-md bg-gray-50">
+                <div className="flex items-center gap-2 h-10">
                   <Badge variant="secondary" className="text-base">
                     {usageCount} 次
                   </Badge>
+                  <span className="text-sm text-red-600">（注意：重新编辑会清空相关已评估纪录！）</span>
                 </div>
               </div>
             </div>
