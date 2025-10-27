@@ -405,13 +405,13 @@ export default function Index() {
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-gray-50 p-4 md:p-6">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-6">
+          <div className="mb-6 md:mb-8">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4 md:mb-6">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">部门考核管理</h1>
-                <p className="text-gray-600">管理各部门的绩效考核指标和评价标准</p>
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">部门考核管理</h1>
+                <p className="text-sm md:text-base text-gray-600">管理各部门的绩效考核指标和评价标准</p>
               </div>
               
               {/* 年度筛选 */}
@@ -432,12 +432,12 @@ export default function Index() {
               </div>
             </div>
             
-            <div className="flex items-center justify-between">
-              <div className="flex gap-4 items-center">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">当前部门：</span>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <span className="text-sm font-medium whitespace-nowrap">当前部门：</span>
                   <Select value={currentDepartmentId} onValueChange={setCurrentDepartmentId}>
-                    <SelectTrigger className="w-48">
+                    <SelectTrigger className="w-full sm:w-48">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -461,7 +461,7 @@ export default function Index() {
                 </div>
               </div>
               
-              <div className="flex gap-2">
+              <div className="flex gap-2 w-full md:w-auto">
                 <Button onClick={addCategory} variant="outline">
                   <Plus className="w-4 h-4 mr-2" />
                   添加类别

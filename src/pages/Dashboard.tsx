@@ -87,14 +87,14 @@ export default function Dashboard() {
   const currentOnTimeRate = activeTab === 'department' ? departmentOnTimeRate : personalOnTimeRate
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
+      <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
         {/* 页面标题 */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
+        <div className="mb-6 md:mb-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4 md:mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">考核数据看板</h1>
-              <p className="text-gray-600">全面了解组织绩效考核情况和数据分析</p>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">考核数据看板</h1>
+              <p className="text-sm md:text-base text-gray-600">全面了解组织绩效考核情况和数据分析</p>
             </div>
             
             {/* 年度筛选 */}
@@ -116,7 +116,7 @@ export default function Dashboard() {
           </div>
 
           {/* 维度切换标签 */}
-          <div className="flex space-x-1 rounded-lg bg-gray-100 p-1 mb-6">
+          <div className="flex space-x-1 rounded-lg bg-gray-100 p-1 mb-4 md:mb-6">
             <button
               onClick={() => setActiveTab('department')}
               className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -143,7 +143,7 @@ export default function Dashboard() {
         </div>
 
         {/* 关键指标卡片 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
@@ -188,7 +188,7 @@ export default function Dashboard() {
         </div>
 
         {/* 图表区域 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
           {/* 绩效分布 */}
           <Card>
             <CardHeader>

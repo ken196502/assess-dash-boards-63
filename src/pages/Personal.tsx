@@ -80,13 +80,13 @@ export default function Personal() {
   const departments = Array.from(new Set(employees.map(emp => emp.department)))
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
+        <div className="mb-6 md:mb-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4 md:mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">个人考核管理</h1>
-              <p className="text-gray-600">管理员工个人绩效考核信息</p>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">个人考核管理</h1>
+              <p className="text-sm md:text-base text-gray-600">管理员工个人绩效考核信息</p>
             </div>
             <Button onClick={handleImportEmployees} className="bg-blue-600 hover:bg-blue-700">
               <Upload className="w-4 h-4 mr-2" />
@@ -95,8 +95,8 @@ export default function Personal() {
           </div>
 
           {/* 筛选区域 */}
-          <div className="bg-white p-4 rounded-lg border border-gray-200 mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div className="bg-white p-4 rounded-lg border border-gray-200 mb-4 md:mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">部门</label>
                 <Select 
@@ -171,7 +171,7 @@ export default function Personal() {
         </div>
 
         {/* 员工列表表格 */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>

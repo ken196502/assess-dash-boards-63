@@ -59,9 +59,9 @@ export default function PersonalDetail() {
   const [categories] = useState<Category[]>(mockCategories)
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-6">
+        <div className="mb-4 md:mb-6">
           <Button
             variant="outline"
             onClick={() => navigate("/personal")}
@@ -71,9 +71,9 @@ export default function PersonalDetail() {
             返回列表
           </Button>
 
-          <div className="bg-white p-6 rounded-lg border border-gray-200 mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">员工考核详情</h1>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <div className="bg-white p-4 md:p-6 rounded-lg border border-gray-200 mb-4 md:mb-6">
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">员工考核详情</h1>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div>
                 <span className="text-gray-500">工号：</span>
                 <span className="font-medium">{mockEmployeeDetail.employeeId}</span>
@@ -94,8 +94,8 @@ export default function PersonalDetail() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">考核详情</h2>
+        <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6">
+          <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4">考核详情</h2>
           <DepartmentAssessmentTable
             categories={categories}
             readOnly={true}

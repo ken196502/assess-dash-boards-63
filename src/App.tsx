@@ -26,11 +26,11 @@ const App = () => (
         <SidebarProvider>
           <div className="flex min-h-screen w-full">
             <AppSidebar />
-            <main className="flex-1 flex flex-col">
-              <header className="h-14 border-b bg-background flex items-center px-4">
+            <main className="flex-1 flex flex-col w-full">
+              <header className="h-14 border-b bg-background flex items-center px-4 sticky top-0 z-10">
                 <SidebarTrigger />
               </header>
-              <div className="flex-1">
+              <div className="flex-1 w-full">
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/department" element={<Index />} />

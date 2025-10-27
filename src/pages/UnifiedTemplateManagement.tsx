@@ -54,13 +54,13 @@ export default function UnifiedTemplateManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
+        <div className="mb-6 md:mb-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4 md:mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">考核模板管理</h1>
-              <p className="text-gray-600">统一管理部门考核和个人考核模板</p>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">考核模板管理</h1>
+              <p className="text-sm md:text-base text-gray-600">统一管理部门考核和个人考核模板</p>
             </div>
             <Button onClick={handleCreateTemplate} size="lg" className="bg-blue-600 hover:bg-blue-700">
               <Plus className="w-5 h-5 mr-2" />
@@ -69,7 +69,7 @@ export default function UnifiedTemplateManagement() {
           </div>
 
           {/* 标签页切换和年份筛选 */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 md:mb-6">
             <div className="flex space-x-1 rounded-lg bg-gray-100 p-1">
               <button
                 onClick={() => setActiveTab('department')}
@@ -111,7 +111,7 @@ export default function UnifiedTemplateManagement() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>

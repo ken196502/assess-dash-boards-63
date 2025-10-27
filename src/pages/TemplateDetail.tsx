@@ -311,41 +311,41 @@ export default function TemplateDetail() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="max-w-7xl mx-auto p-4 md:p-6">
         {/* 头部 */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
+        <div className="mb-6 md:mb-8">
+          <div className="flex flex-col gap-4 mb-4 md:mb-6">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" onClick={handleBack}>
+              <Button variant="ghost" onClick={handleBack} size="sm" className="md:size-default">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 返回
               </Button>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                <h1 className="text-xl md:text-3xl font-bold text-gray-900 mb-2">
                   {isNew ? '新建' : '编辑'}{templateInfo.department}
                   {templateInfo.type === 'department' ? '部门' : `${templateInfo.level}个人`}考核模板
                 </h1>
-                <p className="text-gray-600">
+                <p className="text-sm md:text-base text-gray-600">
                   {isNew ? '创建新的' : '编辑'}考核模板设置
                 </p>
               </div>
             </div>
-            <div className="flex gap-3">
-              <Button onClick={handleAddCategory} variant="outline">
+            <div className="flex gap-2 flex-wrap">
+              <Button onClick={handleAddCategory} variant="outline" size="sm" className="md:size-default">
                 <Plus className="w-4 h-4 mr-2" />
                 添加类别
               </Button>
-              <Button onClick={handleSave} size="lg" className="bg-blue-600 hover:bg-blue-700">
-                <Save className="w-5 h-5 mr-2" />
+              <Button onClick={handleSave} size="sm" className="bg-blue-600 hover:bg-blue-700 md:size-lg">
+                <Save className="w-4 md:w-5 h-4 md:h-5 mr-2" />
                 保存模板
               </Button>
             </div>
           </div>
 
           {/* 模板基本信息 */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-            <h2 className="text-lg font-semibold mb-4">基本信息</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="bg-white rounded-lg border border-gray-200 p-4 md:p-6 mb-4 md:mb-6">
+            <h2 className="text-base md:text-lg font-semibold mb-4">基本信息</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">部门名称</label>
                 <Input
