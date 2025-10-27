@@ -115,32 +115,32 @@ export default function UnifiedTemplateManagement() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[20%]">部门</TableHead>
+                <TableHead className="whitespace-nowrap">部门</TableHead>
                 {activeTab === 'personal' && (
-                  <TableHead className="w-[12%]">职级</TableHead>
+                  <TableHead className="whitespace-nowrap">职级</TableHead>
                 )}
-                <TableHead className="w-[20%]">版本</TableHead>
-                <TableHead className="w-[30%]">变动日志</TableHead>
-                <TableHead className="w-[18%]">操作</TableHead>
+                <TableHead className="whitespace-nowrap">版本</TableHead>
+                <TableHead className="whitespace-nowrap">变动日志</TableHead>
+                <TableHead className="whitespace-nowrap">操作</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredTemplates.map((template) => (
                 <TableRow key={template.id}>
-                  <TableCell className="font-medium">{template.department}</TableCell>
+                  <TableCell className="font-medium whitespace-nowrap">{template.department}</TableCell>
                   {activeTab === 'personal' && (
-                    <TableCell>
+                    <TableCell className="whitespace-nowrap">
                       <Badge variant={template.level === '主管' ? 'default' : 'secondary'}>
                         {template.level}
                       </Badge>
                     </TableCell>
                   )}
-                  <TableCell className="text-sm">
+                  <TableCell className="text-sm whitespace-nowrap">
                     <span className="font-medium text-gray-900">{template.version.substring(0, 4)}</span>
                     <span className="text-gray-500">（已用{template.usageCount}次）</span>
                   </TableCell>
-                  <TableCell className="text-sm text-gray-600">{template.changeLog}</TableCell>
-                  <TableCell>
+                  <TableCell className="text-sm text-gray-600 whitespace-nowrap">{template.changeLog}</TableCell>
+                  <TableCell className="whitespace-nowrap">
                     <div className="flex gap-2">
                       <Button
                         size="sm"
