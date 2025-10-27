@@ -175,35 +175,35 @@ export default function Personal() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[10%]">工号</TableHead>
-                <TableHead className="w-[12%]">部门</TableHead>
-                <TableHead className="w-[10%]">姓名</TableHead>
-                <TableHead className="w-[12%]">职位</TableHead>
-                <TableHead className="w-[10%]">职级</TableHead>
-                <TableHead className="w-[14%]">年度绩效考核分数</TableHead>
-                <TableHead className="w-[14%]">年度考核等级</TableHead>
-                <TableHead className="w-[18%]">操作</TableHead>
+                <TableHead className="whitespace-nowrap">工号</TableHead>
+                <TableHead className="whitespace-nowrap">部门</TableHead>
+                <TableHead className="whitespace-nowrap">姓名</TableHead>
+                <TableHead className="whitespace-nowrap">职位</TableHead>
+                <TableHead className="whitespace-nowrap">职级</TableHead>
+                <TableHead className="whitespace-nowrap">年度绩效考核分数</TableHead>
+                <TableHead className="whitespace-nowrap">年度考核等级</TableHead>
+                <TableHead className="whitespace-nowrap">操作</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredEmployees.length > 0 ? (
                 filteredEmployees.map((employee) => (
                   <TableRow key={employee.id}>
-                    <TableCell className="font-medium">{employee.employeeId}</TableCell>
-                    <TableCell>{employee.department}</TableCell>
-                    <TableCell>{employee.name}</TableCell>
-                    <TableCell>{employee.position}</TableCell>
-                    <TableCell>
+                    <TableCell className="font-medium whitespace-nowrap">{employee.employeeId}</TableCell>
+                    <TableCell className="whitespace-nowrap">{employee.department}</TableCell>
+                    <TableCell className="whitespace-nowrap">{employee.name}</TableCell>
+                    <TableCell className="whitespace-nowrap">{employee.position}</TableCell>
+                    <TableCell className="whitespace-nowrap">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
                         ${employee.level === '主管' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'}
                       `}>
                         {employee.level}
                       </span>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="whitespace-nowrap">
                       <span className="font-semibold text-blue-600">{employee.annualScore}</span>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="whitespace-nowrap">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                         ${employee.annualGrade === 'A' ? 'bg-green-100 text-green-800' : ''}
                         ${employee.annualGrade === 'B' ? 'bg-blue-100 text-blue-800' : ''}
@@ -214,7 +214,7 @@ export default function Personal() {
                         {employee.annualGrade}
                       </span>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="whitespace-nowrap">
                       <Button
                         size="sm"
                         variant="outline"
@@ -229,7 +229,7 @@ export default function Personal() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                  <TableCell colSpan={8} className="text-center py-8 text-gray-500 whitespace-nowrap">
                     暂无符合条件的员工数据
                   </TableCell>
                 </TableRow>
