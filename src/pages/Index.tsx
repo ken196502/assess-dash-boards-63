@@ -432,71 +432,20 @@ export default function Index() {
               </div>
             </div>
             
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <span className="text-sm font-medium whitespace-nowrap">当前部门：</span>
-                  <Select value={currentDepartmentId} onValueChange={setCurrentDepartmentId}>
-                    <SelectTrigger className="w-full sm:w-48">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {departments.map((dept) => (
-                        <SelectItem key={dept.id} value={dept.id}>
-                          {dept.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {departments.length > 1 && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => removeDepartment(currentDepartmentId)}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  )}
-                </div>
-              </div>
-              
-              <div className="flex gap-2 w-full md:w-auto">
-                <Button onClick={addCategory} variant="outline">
-                  <Plus className="w-4 h-4 mr-2" />
-                  添加类别
-                </Button>
-                
-                <Dialog open={showNewDeptDialog} onOpenChange={setShowNewDeptDialog}>
-                  <DialogTrigger asChild>
-                    <Button className="bg-blue-600 hover:bg-blue-700">
-                      <Building2 className="w-4 h-4 mr-2" />
-                      新增部门
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>新增部门</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium mb-1">部门名称</label>
-                        <Input
-                          value={newDeptName}
-                          onChange={(e) => setNewDeptName(e.target.value)}
-                          placeholder="请输入部门名称"
-                        />
-                      </div>
-                      <div className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => setShowNewDeptDialog(false)}>
-                          取消
-                        </Button>
-                        <Button onClick={addDepartment}>确认添加</Button>
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </div>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <span className="text-sm font-medium whitespace-nowrap">当前部门：</span>
+              <Select value={currentDepartmentId} onValueChange={setCurrentDepartmentId}>
+                <SelectTrigger className="w-full sm:w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {departments.map((dept) => (
+                    <SelectItem key={dept.id} value={dept.id}>
+                      {dept.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

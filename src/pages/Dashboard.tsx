@@ -260,10 +260,7 @@ export default function Dashboard() {
                     <tr className="border-b">
                       <th className="text-left p-2">部门</th>
                       <th className="text-left p-2">当前得分</th>
-                      <th className="text-left p-2">目标得分</th>
-                      <th className="text-left p-2">完成率</th>
-                      <th className="text-left p-2">已完成/总数</th>
-                      <th className="text-left p-2">状态</th>
+                      <th className="text-left p-2">绩效</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -271,26 +268,17 @@ export default function Dashboard() {
                       <tr key={dept.name} className="border-b hover:bg-gray-50">
                         <td className="p-2 font-medium">{dept.name}</td>
                         <td className="p-2">{dept.score}</td>
-                        <td className="p-2">{dept.target}</td>
                         <td className="p-2">
                           <span className={`px-2 py-1 rounded-full text-xs ${
-                            dept.score >= dept.target 
+                            dept.score >= 90 
                               ? 'bg-green-100 text-green-800' 
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {Math.round((dept.score / dept.target) * 100)}%
-                          </span>
-                        </td>
-                        <td className="p-2">{dept.completed}/{dept.total}</td>
-                        <td className="p-2">
-                          <span className={`px-2 py-1 rounded-full text-xs ${
-                            dept.score >= dept.target 
-                              ? 'bg-green-100 text-green-800' 
-                              : dept.score >= dept.target * 0.8
+                              : dept.score >= 80
+                              ? 'bg-blue-100 text-blue-800'
+                              : dept.score >= 70
                               ? 'bg-yellow-100 text-yellow-800'
                               : 'bg-red-100 text-red-800'
                           }`}>
-                            {dept.score >= dept.target ? '达标' : dept.score >= dept.target * 0.8 ? '接近' : '待改进'}
+                            {dept.score >= 90 ? 'A' : dept.score >= 80 ? 'B' : dept.score >= 70 ? 'C' : 'D'}
                           </span>
                         </td>
                       </tr>
