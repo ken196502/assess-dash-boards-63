@@ -314,7 +314,7 @@ export function UnifiedKPITable({
                             <Input
                               value={kpi.name}
                               onChange={(e) => onUpdateKPI(category.id, kpi.id, "name", e.target.value)}
-                              className="border-0 p-0 h-auto focus-visible:ring-0"
+                              placeholder="指标名称"
                             />
                           ) : (
                             kpi.name
@@ -329,7 +329,7 @@ export function UnifiedKPITable({
                             <Input
                               value={kpi.target}
                               onChange={(e) => onUpdateKPI(category.id, kpi.id, "target", e.target.value)}
-                              className="border-0 p-0 h-auto focus-visible:ring-0"
+                              placeholder="要求/目标"
                             />
                           ) : (
                             <span className="font-medium text-green-600">{kpi.target}</span>
@@ -581,13 +581,69 @@ export function UnifiedKPITable({
                           </TableCell>
                         )}
 
-                        <TableCell className="font-medium">{kpi.name}</TableCell>
-                        <TableCell><span className="font-medium text-green-600">{kpi.target}</span></TableCell>
-                        <TableCell>{kpi.description}</TableCell>
-                        <TableCell className="text-right">--</TableCell>
+                        <TableCell className="font-medium">
+                          {editingCategory === category.id ? (
+                            <Input
+                              value={kpi.name}
+                              onChange={(e) => onUpdateKPI(category.id, kpi.id, "name", e.target.value)}
+                              placeholder="指标名称"
+                            />
+                          ) : (
+                            kpi.name
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {editingCategory === category.id ? (
+                            <Input
+                              value={kpi.target}
+                              onChange={(e) => onUpdateKPI(category.id, kpi.id, "target", e.target.value)}
+                              placeholder="要求/目标"
+                            />
+                          ) : (
+                            <span className="font-medium text-green-600">{kpi.target}</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {editingCategory === category.id ? (
+                            <Textarea
+                              value={kpi.description}
+                              onChange={(e) => onUpdateKPI(category.id, kpi.id, "description", e.target.value)}
+                              className="min-h-[60px]"
+                              placeholder="输入口径说明"
+                            />
+                          ) : (
+                            kpi.description
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {editingCategory === category.id ? (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => onAddEvaluator(category.id, kpi.id)}
+                              className="h-8 w-full"
+                            >
+                              <UserPlus className="h-4 w-4 mr-1" />
+                              添加评价人
+                            </Button>
+                          ) : (
+                            '--'
+                          )}
+                        </TableCell>
                         <TableCell>--</TableCell>
                         <TableCell>--</TableCell>
-                        <TableCell></TableCell>
+                        <TableCell>
+                          {editingCategory === category.id && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleDeleteClick('kpi', kpi.id, category.id)}
+                              className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          )}
+                        </TableCell>
                         {mode === 'usage' && <TableCell></TableCell>}
                       </TableRow>
                     )
@@ -623,7 +679,7 @@ export function UnifiedKPITable({
         </Table>
       </div>
       
-      {editingCategory && (
+      {mode === 'template' && editingCategory && (
         <div className="mt-4">
           <Button
             variant="outline"
