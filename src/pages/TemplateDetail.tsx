@@ -291,7 +291,15 @@ export default function TemplateDetail() {
       id: `cat-${Date.now()}`,
       name: "新类别",
       description: "类别描述",
-      kpis: []
+      kpis: [
+        {
+          id: `kpi-${Date.now()}`,
+          name: "",
+          target: "",
+          description: "",
+          evaluators: []
+        }
+      ]
     }
     setCategories([...categories, newCategory])
     setEditingCategory(newCategory.id)
