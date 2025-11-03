@@ -238,8 +238,11 @@ export function UnifiedKPITable({
           <TableBody>
             {categories.map((category) => {
               const categoryRowStart = currentRowIndex
+              // 计算类别总行数：包括KPI行 + 编辑模式下每个KPI的添加评价人行
               const categoryRowSpan = category.kpis.reduce((total, kpi) => {
-                return total + Math.max(1, kpi.evaluators.length)
+                const kpiRows = Math.max(1, kpi.evaluators.length)
+                const addButtonRow = (mode === 'template' && editingCategory === category.id) ? 1 : 0
+                return total + kpiRows + addButtonRow
               }, 0)
               
               return category.kpis.map((kpi, kpiIndex) => {
@@ -520,7 +523,34 @@ export function UnifiedKPITable({
                   )
                   currentRowIndex++
                   return row
-                }) : [
+                }).concat(
+                  // 在编辑模式下，为每个KPI添加一个"添加评价人"的行
+                  mode === 'template' && editingCategory === category.id ? [
+                    (() => {
+                      const addRow = (
+                        <TableRow key={`${kpi.id}-add-evaluator`} className="bg-blue-50/30">
+                          {/* 跳过类别和说明列（已被rowSpan占用）*/}
+                          {/* 跳过指标、目标、口径列（已被rowSpan占用）*/}
+                          
+                          {/* 评价人列 - 显示添加按钮 */}
+                          <TableCell className="text-right" colSpan={4}>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => onAddEvaluator(category.id, kpi.id)}
+                              className="w-full border-dashed"
+                            >
+                              <UserPlus className="h-4 w-4 mr-1" />
+                              添加评价人
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      )
+                      currentRowIndex++
+                      return addRow
+                    })()
+                  ] : []
+                ) : [
                   // 处理没有评估人的情况
                   (() => {
                     const row = (
