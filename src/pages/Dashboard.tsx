@@ -153,9 +153,6 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{currentTotal}</div>
-              <p className="text-xs text-muted-foreground">
-                {activeTab === 'department' ? '+1 较上月' : '+12% 较上月'}
-              </p>
             </CardContent>
           </Card>
 
@@ -166,9 +163,6 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{currentCompleted}</div>
-              <p className="text-xs text-muted-foreground">
-                完成率 {Math.round((currentCompleted / currentTotal) * 100)}%
-              </p>
             </CardContent>
           </Card>
 
@@ -179,9 +173,6 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{currentAvgScore}</div>
-              <p className="text-xs text-muted-foreground">
-                {activeTab === 'department' ? '+1.5 较上月' : '+2.3 较上月'}
-              </p>
             </CardContent>
           </Card>
 
