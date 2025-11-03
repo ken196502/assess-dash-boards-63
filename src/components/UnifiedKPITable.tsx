@@ -186,6 +186,11 @@ export function UnifiedKPITable({
 
   // 检查是否可以填写评分（顺序限制 - 仅在每个指标内）
   const canFillScore = (categoryId: string, kpiId: string, evaluatorIndex: number) => {
+    // 在模板模式下，允许试算评分，不受顺序限制
+    if (mode === 'template') {
+      return true
+    }
+    
     const category = categories.find(cat => cat.id === categoryId)
     if (!category) return false
     
