@@ -15,6 +15,7 @@ const mockTemplateData: Category[] = [
         id: "kpi1",
         name: "销售目标达成率",
         target: "≥100%",
+        weight: "60%",
         description: "年度销售目标完成情况",
         evaluators: [
           { id: "eval1", name: "直属上级", weight: "60%", score: undefined },
@@ -32,6 +33,7 @@ const mockTemplateData: Category[] = [
         id: "kpi2",
         name: "专业技能",
         target: "熟练掌握",
+        weight: "40%",
         description: "岗位所需专业技能掌握程度",
         evaluators: [
           { id: "eval3", name: "直属上级", weight: "100%", score: undefined },
@@ -145,6 +147,7 @@ export default function DepartmentTemplateManagement() {
               id: `kpi-${Date.now()}`,
               name: "",
               target: "",
+              weight: "0%",
               description: "",
               evaluators: []
             }

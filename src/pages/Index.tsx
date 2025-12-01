@@ -32,6 +32,7 @@ const generateInitialDepartments = (): Department[] => {
             id: `${deptName}-revenue`,
             name: "营业收入指标",
             target: "1000万元",
+            weight: "30%",
             evaluators: [
               { id: `${deptName}-eval1`, name: "张三", weight: "50%" },
               { id: `${deptName}-eval2`, name: "李四", weight: "50%" },
@@ -43,6 +44,7 @@ const generateInitialDepartments = (): Department[] => {
             id: `${deptName}-profit`,
             name: "营业利润指标",
             target: "200万元",
+            weight: "30%",
             evaluators: [{ id: `${deptName}-eval3`, name: "张三", weight: "100%" }],
             description:
               "口径说明：与财务部报送总部口径一致，不考虑协同收入及所得税费用，得分=实际完成值/目标值，120分封顶。",
@@ -58,6 +60,7 @@ const generateInitialDepartments = (): Department[] => {
             id: `${deptName}-general`,
             name: "客户拓展指标",
             target: "新增50家",
+            weight: "40%",
             evaluators: [
               { id: `${deptName}-eval6`, name: "董事长", weight: "70%" },
               { id: `${deptName}-eval7`, name: "行政总裁", weight: "30%" },
@@ -223,6 +226,7 @@ export default function Index() {
       id: `kpi-${Date.now()}`,
       name: "新指标",
       target: "",
+      weight: "0%",
       evaluators: [{ id: `evaluator-${Date.now()}`, name: "", weight: "" }],
       description: "",
     }
@@ -266,6 +270,7 @@ export default function Index() {
           id: `kpi-${Date.now()}`,
           name: "新指标",
           target: "",
+          weight: "0%",
           evaluators: [{ id: `evaluator-${Date.now()}`, name: "", weight: "" }],
           description: "",
         },
@@ -379,6 +384,7 @@ export default function Index() {
               id: `kpi-${Date.now()}`,
               name: "新指标",
               target: "",
+              weight: "0%",
               evaluators: [{ id: `evaluator-${Date.now()}`, name: "", weight: "" }],
               description: "",
             },

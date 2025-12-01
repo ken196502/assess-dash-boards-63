@@ -12,6 +12,7 @@ export interface KPI {
   id: string
   name: string
   target: string
+  weight: string // 指标权重
   evaluators: Evaluator[]
   description: string
 }

@@ -80,41 +80,47 @@ export function UnifiedKPITable({
   })
   
   
-  // 计算总加权分数（负数不乘以权重）
+  // 计算总加权分数: sum(正数评分×指标权重×评价人权重) - sum(abs(负数评分))
   const calculateTotalWeightedScore = () => {
     let totalScore = 0
     let hasAnyScore = false
 
     categories.forEach(category => {
       category.kpis.forEach(kpi => {
-        let kpiWeightedScore = 0
-        let kpiTotalWeight = 0
-        let kpiHasScore = false
+        const kpiWeight = parseFloat(kpi.weight?.replace('%', '') || '0') / 100
 
         kpi.evaluators.forEach(evaluator => {
           if (evaluator.score !== undefined) {
-            const weight = parseFloat(evaluator.weight.replace('%', '')) / 100
-            if (!isNaN(weight)) {
-              // 负数不乘以权重
+            const evalWeight = parseFloat(evaluator.weight.replace('%', '')) / 100
+            if (!isNaN(evalWeight) && !isNaN(kpiWeight)) {
+              // 负数不乘以权重，直接减去绝对值
               if (evaluator.score < 0) {
-                kpiWeightedScore += evaluator.score
+                totalScore -= Math.abs(evaluator.score)
               } else {
-                kpiWeightedScore += evaluator.score * weight
+                totalScore += evaluator.score * kpiWeight * evalWeight
               }
-              kpiTotalWeight += weight
-              kpiHasScore = true
+              hasAnyScore = true
             }
           }
         })
-
-        if (kpiHasScore && kpiTotalWeight > 0) {
-          totalScore += kpiWeightedScore
-          hasAnyScore = true
-        }
       })
     })
 
     return hasAnyScore ? totalScore.toFixed(1) : '--'
+  }
+
+  // 计算指标的评价人权重总和
+  const calculateEvaluatorWeightSum = (kpi: KPI) => {
+    return kpi.evaluators.reduce((sum, evaluator) => {
+      const weight = parseFloat(evaluator.weight.replace('%', '')) || 0
+      return sum + weight
+    }, 0)
+  }
+
+  // 检查评价人权重是否等于100%
+  const isEvaluatorWeightValid = (kpi: KPI) => {
+    const sum = calculateEvaluatorWeightSum(kpi)
+    return kpi.evaluators.length === 0 || sum === 100
   }
 
   // 处理邀请评价
@@ -222,17 +228,18 @@ export function UnifiedKPITable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[11%]">类别</TableHead>
-              <TableHead className="w-[11%]">说明</TableHead>
-              <TableHead className="w-[9%]">指标</TableHead>
-              <TableHead className="w-[7%]">要求/目标</TableHead>
-              <TableHead className="w-[11%]">口径说明</TableHead>
-              <TableHead className="w-[8%] text-right">评价人</TableHead>
-              <TableHead className="w-[6%]">权重</TableHead>
-              <TableHead className="w-[7%]">评估分数</TableHead>
-              {mode === 'usage' && <TableHead className="w-[11%]">评估备注</TableHead>}
-              {mode === 'usage' && <TableHead className="w-[7%]">已邀请</TableHead>}
-              {mode === 'usage' && <TableHead className="w-[12%]">操作</TableHead>}
+              <TableHead className="w-[10%]">类别</TableHead>
+              <TableHead className="w-[10%]">说明</TableHead>
+              <TableHead className="w-[8%]">指标</TableHead>
+              <TableHead className="w-[5%]">指标权重</TableHead>
+              <TableHead className="w-[6%]">要求/目标</TableHead>
+              <TableHead className="w-[10%]">口径说明</TableHead>
+              <TableHead className="w-[7%] text-right">评价人</TableHead>
+              <TableHead className="w-[5%]">评价人权重</TableHead>
+              <TableHead className="w-[6%]">评估分数</TableHead>
+              {mode === 'usage' && <TableHead className="w-[10%]">评估备注</TableHead>}
+              {mode === 'usage' && <TableHead className="w-[6%]">已邀请</TableHead>}
+              {mode === 'usage' && <TableHead className="w-[10%]">操作</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -330,6 +337,31 @@ export function UnifiedKPITable({
                         </TableCell>
                       )}
 
+                      {/* 指标权重列 - 只在KPI的第一行显示 */}
+                      {evalIndex === 0 && (
+                        <TableCell rowSpan={kpiRowSpan} className="align-top">
+                          {mode === 'template' && editingCategory === category.id ? (
+                            <Input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={kpi.weight?.replace('%', '') || '0'}
+                              onChange={(e) => {
+                                const value = e.target.value
+                                const numValue = parseInt(value)
+                                if (value === '' || (numValue >= 0 && numValue <= 100)) {
+                                  onUpdateKPI(category.id, kpi.id, "weight", value === '' ? '0%' : `${numValue}%`)
+                                }
+                              }}
+                              placeholder="0-100"
+                              className="w-full"
+                            />
+                          ) : (
+                            <span className="font-medium text-purple-600">{kpi.weight || '0%'}</span>
+                          )}
+                        </TableCell>
+                      )}
+
                       {/* 要求/目标列 - 只在KPI的第一行显示 */}
                       {evalIndex === 0 && (
                         <TableCell rowSpan={kpiRowSpan} className="align-top">
@@ -416,24 +448,32 @@ export function UnifiedKPITable({
                         )}
                       </TableCell>
 
-                      {/* 权重列 */}
+                      {/* 评价人权重列 */}
                       <TableCell>
                         {mode === 'template' && editingCategory === category.id ? (
-                          <Input
-                            type="number"
-                            min="1"
-                            max="100"
-                            value={evaluator.weight.replace('%', '')}
-                            onChange={(e) => {
-                              const value = e.target.value
-                              const numValue = parseInt(value)
-                              if (value === '' || (numValue >= 1 && numValue <= 100)) {
-                                onUpdateEvaluator(category.id, kpi.id, evaluator.id, "weight", value === '' ? '' : `${numValue}%`)
-                              }
-                            }}
-                            placeholder="1-100"
-                            className="w-full"
-                          />
+                          <div className="space-y-1">
+                            <Input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={evaluator.weight.replace('%', '')}
+                              onChange={(e) => {
+                                const value = e.target.value
+                                const numValue = parseInt(value)
+                                if (value === '' || (numValue >= 0 && numValue <= 100)) {
+                                  onUpdateEvaluator(category.id, kpi.id, evaluator.id, "weight", value === '' ? '0%' : `${numValue}%`)
+                                }
+                              }}
+                              placeholder="0-100"
+                              className="w-full"
+                            />
+                            {evalIndex === kpi.evaluators.length - 1 && (
+                              <div className={`text-xs ${isEvaluatorWeightValid(kpi) ? 'text-green-600' : 'text-red-600'}`}>
+                                合计: {calculateEvaluatorWeightSum(kpi)}%
+                                {!isEvaluatorWeightValid(kpi) && ' (需100%)'}
+                              </div>
+                            )}
+                          </div>
                         ) : (
                           <div className="text-sm font-medium text-blue-600">
                             {evaluator.weight}
@@ -530,10 +570,10 @@ export function UnifiedKPITable({
                       const addRow = (
                         <TableRow key={`${kpi.id}-add-evaluator`} className="bg-blue-50/30">
                           {/* 跳过类别和说明列（已被rowSpan占用）*/}
-                          {/* 跳过指标、目标、口径列（已被rowSpan占用）*/}
+                          {/* 跳过指标、指标权重、目标、口径列（已被rowSpan占用）*/}
                           
                           {/* 评价人列 - 显示添加按钮 */}
-                          <TableCell className="text-right" colSpan={4}>
+                          <TableCell className="text-right" colSpan={3}>
                             <Button
                               size="sm"
                               variant="outline"
@@ -630,6 +670,27 @@ export function UnifiedKPITable({
                         <TableCell>
                           {editingCategory === category.id ? (
                             <Input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={kpi.weight?.replace('%', '') || '0'}
+                              onChange={(e) => {
+                                const value = e.target.value
+                                const numValue = parseInt(value)
+                                if (value === '' || (numValue >= 0 && numValue <= 100)) {
+                                  onUpdateKPI(category.id, kpi.id, "weight", value === '' ? '0%' : `${numValue}%`)
+                                }
+                              }}
+                              placeholder="0-100"
+                              className="w-full"
+                            />
+                          ) : (
+                            <span className="font-medium text-purple-600">{kpi.weight || '0%'}</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {editingCategory === category.id ? (
+                            <Input
                               value={kpi.target}
                               onChange={(e) => onUpdateKPI(category.id, kpi.id, "target", e.target.value)}
                               placeholder="要求/目标"
@@ -691,7 +752,7 @@ export function UnifiedKPITable({
             
             {/* 总分行 */}
             <TableRow className="bg-blue-50 font-medium">
-              <TableCell colSpan={7} className="text-right text-blue-800">
+              <TableCell colSpan={8} className="text-right text-blue-800">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span className="cursor-help">
@@ -699,7 +760,7 @@ export function UnifiedKPITable({
                     </span>
                   </TooltipTrigger>
                   <TooltipContent className="max-w-sm">
-                    <p className="text-sm">sum(正数评分×权重)-sum(abs(负数评分))</p>
+                    <p className="text-sm">sum(正数评分×指标权重×评价人权重)-sum(abs(负数评分))</p>
                   </TooltipContent>
                 </Tooltip>
               </TableCell>
