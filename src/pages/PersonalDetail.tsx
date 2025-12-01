@@ -25,6 +25,7 @@ const mockCategories: Category[] = [
         id: "revenue",
         name: "营业收入指标",
         target: "1000万元",
+        weight: "50%",
         evaluators: [
           { id: "eval1", name: "张三", weight: "50%", score: 85 },
           { id: "eval2", name: "李四", weight: "50%", score: 90 },
@@ -43,6 +44,7 @@ const mockCategories: Category[] = [
         id: "general",
         name: "客户拓展指标",
         target: "新增50家",
+        weight: "50%",
         evaluators: [
           { id: "eval6", name: "董事长", weight: "70%", score: 88 },
           { id: "eval7", name: "行政总裁", weight: "30%" },

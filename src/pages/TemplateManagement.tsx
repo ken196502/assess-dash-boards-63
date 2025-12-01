@@ -44,6 +44,7 @@ const convertTemplateItemsToCategories = (items: TemplateItem[]): Category[] => 
       id: item.id,
       name: item.indicator,
       target: item.target,
+      weight: `${item.weight}%`,
       description: item.caliber,
       evaluators: [{
         id: `eval-${item.id}`,
@@ -194,6 +195,7 @@ export default function TemplateManagement() {
               id: `kpi-${Date.now()}`,
               name: "",
               target: "",
+              weight: "0%",
               description: "",
               evaluators: []
             }
