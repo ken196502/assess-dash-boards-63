@@ -60,6 +60,10 @@ export default function PersonalDetail() {
   const navigate = useNavigate()
   const [categories] = useState<Category[]>(mockCategories)
 
+  const handleComplete = () => {
+    navigate("/personal")
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
@@ -102,6 +106,7 @@ export default function PersonalDetail() {
             categories={categories}
             readOnly={true}
             canRemoveCategory={false}
+            completeButtonConfig={{ label: "完成并返回列表", onClick: handleComplete }}
           />
         </div>
       </div>
