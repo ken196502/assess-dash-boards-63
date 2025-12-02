@@ -37,6 +37,7 @@ interface UnifiedKPITableProps {
   canRemoveCategory: boolean
   onMoveEvaluator: (categoryId: string, kpiId: string, evaluatorId: string, direction: 'up' | 'down') => void
   mode?: 'template' | 'usage' // 模板设置模式 或 使用模式
+  completeButtonConfig?: { label: string, onClick: () => void } // 完成按钮配置
 }
 
 export function UnifiedKPITable({
@@ -56,7 +57,8 @@ export function UnifiedKPITable({
   onCopyCategory,
   canRemoveCategory,
   onMoveEvaluator,
-  mode = 'usage'
+  mode = 'usage',
+  completeButtonConfig
 }: UnifiedKPITableProps) {
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; type: 'category' | 'kpi' | 'evaluator'; id: string; categoryId?: string; kpiId?: string }>({
     open: false,
@@ -765,7 +767,18 @@ export function UnifiedKPITable({
                 </Tooltip>
               </TableCell>
               <TableCell className="text-blue-800 font-bold">
-                {calculateTotalWeightedScore()}
+                <div className="flex items-center justify-between gap-2">
+                  <span>{calculateTotalWeightedScore()}</span>
+                  {completeButtonConfig && (
+                    <Button
+                      size="sm"
+                      onClick={completeButtonConfig.onClick}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      {completeButtonConfig.label}
+                    </Button>
+                  )}
+                </div>
               </TableCell>
               {mode === 'usage' && <TableCell></TableCell>}
               {mode === 'usage' && <TableCell></TableCell>}

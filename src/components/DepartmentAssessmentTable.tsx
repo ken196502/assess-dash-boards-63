@@ -6,7 +6,7 @@ interface DepartmentAssessmentTableProps {
   categories: Category[]
   onUpdateCategory?: (categoryId: string, field: keyof Category, value: string) => void
   onUpdateKPI?: (categoryId: string, kpiId: string, field: keyof KPI, value: string | number) => void
-  onUpdateEvaluator?: (categoryId: string, kpiId: string, evaluatorId: string, field: keyof Evaluator, value: string | number) => void
+  onUpdateEvaluator?: (categoryId: string, kpiId: string, evaluatorId: string, field: keyof Evaluator, value: string | number | boolean) => void
   onAddEvaluator?: (categoryId: string, kpiId: string) => void
   onRemoveEvaluator?: (categoryId: string, kpiId: string, evaluatorId: string) => void
   onAddKPI?: (categoryId: string) => void
@@ -17,6 +17,7 @@ interface DepartmentAssessmentTableProps {
   canRemoveCategory?: boolean
   readOnly?: boolean
   mode?: 'template' | 'usage' // 模板设置模式 或 使用模式
+  completeButtonConfig?: { label: string, onClick: () => void } // 完成按钮配置
 }
 
 export function DepartmentAssessmentTable({
@@ -33,7 +34,8 @@ export function DepartmentAssessmentTable({
   onMoveEvaluator,
   canRemoveCategory = false,
   readOnly = false,
-  mode = 'usage'
+  mode = 'usage',
+  completeButtonConfig
 }: DepartmentAssessmentTableProps) {
   const [editingCategory, setEditingCategory] = useState<string | null>(null)
 
@@ -71,6 +73,7 @@ export function DepartmentAssessmentTable({
       canRemoveCategory={canRemoveCategory}
       onMoveEvaluator={onMoveEvaluator || noop}
       mode={mode}
+      completeButtonConfig={completeButtonConfig}
     />
   )
 }

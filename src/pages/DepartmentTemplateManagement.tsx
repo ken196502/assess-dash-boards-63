@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { DepartmentAssessmentTable } from "@/components/DepartmentAssessmentTable"
 import { Category, KPI, Evaluator } from "@/types/assessment"
 import { toast } from "@/hooks/use-toast"
@@ -44,6 +45,7 @@ const mockTemplateData: Category[] = [
 ]
 
 export default function DepartmentTemplateManagement() {
+  const navigate = useNavigate()
   const [categories, setCategories] = useState<Category[]>(mockTemplateData)
 
   const handleUpdateCategory = (categoryId: string, field: keyof Category, value: string) => {
@@ -231,6 +233,14 @@ export default function DepartmentTemplateManagement() {
     })
   }
 
+  const handleComplete = () => {
+    toast({
+      title: "已完成",
+      description: "返回面板",
+    })
+    navigate("/")
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
@@ -261,6 +271,7 @@ export default function DepartmentTemplateManagement() {
           onMoveEvaluator={handleMoveEvaluator}
           canRemoveCategory={true}
           mode="template"
+          completeButtonConfig={{ label: "完成并返回面板", onClick: handleComplete }}
         />
       </div>
     </div>
