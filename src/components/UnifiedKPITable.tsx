@@ -125,6 +125,20 @@ export function UnifiedKPITable({
     return kpi.evaluators.length === 0 || sum === 100
   }
 
+  // 检查是否所有评价人都已评分
+  const allScoresFilled = () => {
+    for (const category of categories) {
+      for (const kpi of category.kpis) {
+        for (const evaluator of kpi.evaluators) {
+          if (evaluator.score === undefined) {
+            return false
+          }
+        }
+      }
+    }
+    return true
+  }
+
   // 处理邀请评价
   const handleInvite = (categoryId: string, kpiId: string, evaluatorId: string, evaluatorName: string) => {
     setInviteDialog({ 
@@ -769,7 +783,7 @@ export function UnifiedKPITable({
               <TableCell className="text-blue-800 font-bold">
                 <div className="flex items-center justify-between gap-2">
                   <span>{calculateTotalWeightedScore()}</span>
-                  {completeButtonConfig && (
+                  {completeButtonConfig && allScoresFilled() && (
                     <Button
                       size="sm"
                       onClick={completeButtonConfig.onClick}
