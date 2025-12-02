@@ -6,7 +6,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Settings, Plus, FileText, Copy } from "lucide-react"
 import { useNavigate } from "react-router-dom"
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
 import { toast } from "@/hooks/use-toast"
 
 interface Template {
@@ -26,7 +27,14 @@ export default function UnifiedTemplateManagement() {
   const [templates] = useState<Template[]>(templateData)
   const [activeTab, setActiveTab] = useState<'department' | 'personal'>('department')
   const [selectedYear, setSelectedYear] = useState<string>("2025")
+  const [isCopyDialogOpen, setIsCopyDialogOpen] = useState(false)
+  const [templateToCopy, setTemplateToCopy] = useState<Template | null>(null)
+  const [targetDepartment, setTargetDepartment] = useState<string>("")
+  const [targetYear, setTargetYear] = useState<string>("2025")
   const navigate = useNavigate()
+
+  // 获取所有可用的部门列表
+  const departmentList = Array.from(new Set(templates.map(t => t.department)))
 
   const filteredTemplates = templates.filter(template => {
     const matchesType = template.type === activeTab
@@ -43,10 +51,27 @@ export default function UnifiedTemplateManagement() {
   }
 
   const handleCopyTemplate = (template: Template) => {
+    setTemplateToCopy(template)
+    setTargetDepartment("")
+    setTargetYear(selectedYear)
+    setIsCopyDialogOpen(true)
+  }
+
+  const handleConfirmCopy = () => {
+    if (!targetDepartment || !targetYear) {
+      toast({
+        title: "请完善信息",
+        description: "请选择目标部门和年份",
+        variant: "destructive"
+      })
+      return
+    }
+    
     toast({
       title: "复制成功",
-      description: `已复制 ${template.department}${activeTab === 'department' ? '部门' : `${template.level}个人`}考核模板`,
+      description: `已将 ${templateToCopy?.department} 的模板复制到 ${targetDepartment} ${targetYear}年`,
     })
+    setIsCopyDialogOpen(false)
   }
 
   const getTypeLabel = (type: 'department' | 'personal') => {
@@ -177,6 +202,60 @@ export default function UnifiedTemplateManagement() {
             </TableBody>
           </Table>
         </div>
+
+        {/* 复制模板对话框 */}
+        <Dialog open={isCopyDialogOpen} onOpenChange={setIsCopyDialogOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>复制模板</DialogTitle>
+              <DialogDescription>
+                将 {templateToCopy?.department} 的{getTypeLabel(activeTab)}模板复制到新部门
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="target-department" className="text-right">
+                  目标部门
+                </Label>
+                <Select value={targetDepartment} onValueChange={setTargetDepartment}>
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="请选择部门" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {departmentList.map(dept => (
+                      <SelectItem key={dept} value={dept}>
+                        {dept}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="target-year" className="text-right">
+                  年份
+                </Label>
+                <Select value={targetYear} onValueChange={setTargetYear}>
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2025">2025</SelectItem>
+                    <SelectItem value="2024">2024</SelectItem>
+                    <SelectItem value="2023">2023</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsCopyDialogOpen(false)}>
+                取消
+              </Button>
+              <Button onClick={handleConfirmCopy}>
+                确认复制
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   )
