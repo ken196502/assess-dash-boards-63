@@ -783,7 +783,7 @@ export function UnifiedKPITable({
               <TableCell className="text-blue-800 font-bold">
                 <div className="flex items-center justify-between gap-2">
                   <span>{calculateTotalWeightedScore()}</span>
-                  {completeButtonConfig && allScoresFilled() && (
+                  {completeButtonConfig && (
                     <Button
                       size="sm"
                       onClick={completeButtonConfig.onClick}
