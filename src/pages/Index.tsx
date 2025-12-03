@@ -2,9 +2,11 @@
 "use client"
 
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Building2, Plus, Trash2 } from "lucide-react"
+import { toast } from "@/hooks/use-toast"
 import { Department, Category, KPI, Evaluator } from "@/types/assessment"
 import { UnifiedKPITable } from "@/components/UnifiedKPITable"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -76,6 +78,7 @@ const generateInitialDepartments = (): Department[] => {
 const initialDepartments: Department[] = generateInitialDepartments()
 
 export default function Index() {
+  const navigate = useNavigate()
   const [departments, setDepartments] = useState<Department[]>(initialDepartments)
   const [currentDepartmentId, setCurrentDepartmentId] = useState<string>(initialDepartments[0]?.id || "")
   const [selectedYear, setSelectedYear] = useState<string>('2024')
@@ -474,6 +477,13 @@ export default function Index() {
               canRemoveCategory={currentDepartment.categories.length > 1}
               onMoveEvaluator={moveEvaluator}
               mode="usage"
+              completeButtonConfig={{
+                label: "完成并返回面板",
+                onClick: () => {
+                  toast({ title: "已完成", description: "返回面板" })
+                  navigate("/dashboard")
+                }
+              }}
             />
           )}
         </div>
