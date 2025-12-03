@@ -481,7 +481,7 @@ export default function Index() {
                 label: "完成并返回看板",
                 onClick: () => {
                   toast({ title: "已完成", description: "返回看板" })
-                  navigate("/dashboard")
+                  navigate("/")
                 }
               }}
             />
