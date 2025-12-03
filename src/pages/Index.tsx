@@ -478,9 +478,9 @@ export default function Index() {
               onMoveEvaluator={moveEvaluator}
               mode="usage"
               completeButtonConfig={{
-                label: "完成并返回面板",
+                label: "完成并返回看板",
                 onClick: () => {
-                  toast({ title: "已完成", description: "返回面板" })
+                  toast({ title: "已完成", description: "返回看板" })
                   navigate("/dashboard")
                 }
               }}
