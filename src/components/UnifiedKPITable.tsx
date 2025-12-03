@@ -247,9 +247,9 @@ export function UnifiedKPITable({
               <TableHead className="w-[10%]">类别</TableHead>
               <TableHead className="w-[10%]">说明</TableHead>
               <TableHead className="w-[8%]">指标</TableHead>
-              <TableHead className="w-[5%]">指标权重</TableHead>
               <TableHead className="w-[6%]">要求/目标</TableHead>
               <TableHead className="w-[10%]">口径说明</TableHead>
+              <TableHead className="w-[5%]">指标权重</TableHead>
               <TableHead className="w-[7%] text-right">评价人</TableHead>
               <TableHead className="w-[5%]">评价人权重</TableHead>
               <TableHead className="w-[6%]">评估分数</TableHead>
@@ -353,31 +353,6 @@ export function UnifiedKPITable({
                         </TableCell>
                       )}
 
-                      {/* 指标权重列 - 只在KPI的第一行显示 */}
-                      {evalIndex === 0 && (
-                        <TableCell rowSpan={kpiRowSpan} className="align-top">
-                          {mode === 'template' && editingCategory === category.id ? (
-                            <Input
-                              type="number"
-                              min="0"
-                              max="100"
-                              value={kpi.weight?.replace('%', '') || '0'}
-                              onChange={(e) => {
-                                const value = e.target.value
-                                const numValue = parseInt(value)
-                                if (value === '' || (numValue >= 0 && numValue <= 100)) {
-                                  onUpdateKPI(category.id, kpi.id, "weight", value === '' ? '0%' : `${numValue}%`)
-                                }
-                              }}
-                              placeholder="0-100"
-                              className="w-full"
-                            />
-                          ) : (
-                            <span className="font-medium text-purple-600">{kpi.weight || '0%'}</span>
-                          )}
-                        </TableCell>
-                      )}
-
                       {/* 要求/目标列 - 只在KPI的第一行显示 */}
                       {evalIndex === 0 && (
                         <TableCell rowSpan={kpiRowSpan} className="align-top">
@@ -414,6 +389,31 @@ export function UnifiedKPITable({
                                 <p className="text-sm">{kpi.description}</p>
                               </TooltipContent>
                             </Tooltip>
+                          )}
+                        </TableCell>
+                      )}
+
+                      {/* 指标权重列 - 只在KPI的第一行显示 */}
+                      {evalIndex === 0 && (
+                        <TableCell rowSpan={kpiRowSpan} className="align-top">
+                          {mode === 'template' && editingCategory === category.id ? (
+                            <Input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={kpi.weight?.replace('%', '') || '0'}
+                              onChange={(e) => {
+                                const value = e.target.value
+                                const numValue = parseInt(value)
+                                if (value === '' || (numValue >= 0 && numValue <= 100)) {
+                                  onUpdateKPI(category.id, kpi.id, "weight", value === '' ? '0%' : `${numValue}%`)
+                                }
+                              }}
+                              placeholder="0-100"
+                              className="w-full"
+                            />
+                          ) : (
+                            <span className="font-medium text-purple-600">{kpi.weight || '0%'}</span>
                           )}
                         </TableCell>
                       )}
@@ -686,27 +686,6 @@ export function UnifiedKPITable({
                         <TableCell>
                           {editingCategory === category.id ? (
                             <Input
-                              type="number"
-                              min="0"
-                              max="100"
-                              value={kpi.weight?.replace('%', '') || '0'}
-                              onChange={(e) => {
-                                const value = e.target.value
-                                const numValue = parseInt(value)
-                                if (value === '' || (numValue >= 0 && numValue <= 100)) {
-                                  onUpdateKPI(category.id, kpi.id, "weight", value === '' ? '0%' : `${numValue}%`)
-                                }
-                              }}
-                              placeholder="0-100"
-                              className="w-full"
-                            />
-                          ) : (
-                            <span className="font-medium text-purple-600">{kpi.weight || '0%'}</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {editingCategory === category.id ? (
-                            <Input
                               value={kpi.target}
                               onChange={(e) => onUpdateKPI(category.id, kpi.id, "target", e.target.value)}
                               placeholder="要求/目标"
@@ -725,6 +704,27 @@ export function UnifiedKPITable({
                             />
                           ) : (
                             kpi.description
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {editingCategory === category.id ? (
+                            <Input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={kpi.weight?.replace('%', '') || '0'}
+                              onChange={(e) => {
+                                const value = e.target.value
+                                const numValue = parseInt(value)
+                                if (value === '' || (numValue >= 0 && numValue <= 100)) {
+                                  onUpdateKPI(category.id, kpi.id, "weight", value === '' ? '0%' : `${numValue}%`)
+                                }
+                              }}
+                              placeholder="0-100"
+                              className="w-full"
+                            />
+                          ) : (
+                            <span className="font-medium text-purple-600">{kpi.weight || '0%'}</span>
                           )}
                         </TableCell>
                         <TableCell className="text-right">
