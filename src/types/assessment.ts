@@ -6,6 +6,7 @@ export interface Evaluator {
   score?: number // 每个评估人的分数
   remark?: string // 评分备注
   invited?: boolean // 是否已邀请
+  order?: number // 评价顺序
 }
 
 export interface KPI {

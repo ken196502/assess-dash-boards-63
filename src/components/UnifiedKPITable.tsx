@@ -38,6 +38,7 @@ interface UnifiedKPITableProps {
   onMoveEvaluator: (categoryId: string, kpiId: string, evaluatorId: string, direction: 'up' | 'down') => void
   mode?: 'template' | 'usage' // 模板设置模式 或 使用模式
   completeButtonConfig?: { label: string, onClick: () => void } // 完成按钮配置
+  showScoreInput?: boolean // 是否显示分数输入框（而非弹窗）
 }
 
 export function UnifiedKPITable({
@@ -58,7 +59,8 @@ export function UnifiedKPITable({
   canRemoveCategory,
   onMoveEvaluator,
   mode = 'usage',
-  completeButtonConfig
+  completeButtonConfig,
+  showScoreInput = false
 }: UnifiedKPITableProps) {
   const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; type: 'category' | 'kpi' | 'evaluator'; id: string; categoryId?: string; kpiId?: string }>({
     open: false,
@@ -252,6 +254,7 @@ export function UnifiedKPITable({
               <TableHead className="w-[5%]">指标权重</TableHead>
               <TableHead className="w-[7%] text-right">评价人</TableHead>
               <TableHead className="w-[5%]">评价人权重</TableHead>
+              {mode === 'template' && <TableHead className="w-[5%]">评价顺序</TableHead>}
               <TableHead className="w-[6%]">评估分数</TableHead>
               {mode === 'usage' && <TableHead className="w-[10%]">评估备注</TableHead>}
               {mode === 'usage' && <TableHead className="w-[6%]">已邀请</TableHead>}
@@ -497,53 +500,97 @@ export function UnifiedKPITable({
                         )}
                       </TableCell>
 
+                      {/* 评价顺序列 - 仅在模板模式下显示 */}
+                      {mode === 'template' && (
+                        <TableCell>
+                          {editingCategory === category.id ? (
+                            <Input
+                              type="number"
+                              value={evaluator.order ?? ''}
+                              onChange={(e) => {
+                                const value = e.target.value === '' ? undefined : parseInt(e.target.value)
+                                onUpdateEvaluator(category.id, kpi.id, evaluator.id, "order", value as number)
+                              }}
+                              placeholder="顺序"
+                              className="w-16"
+                            />
+                          ) : (
+                            <div className="text-sm text-gray-600">
+                              {evaluator.order ?? '--'}
+                            </div>
+                          )}
+                        </TableCell>
+                      )}
+
                       {/* 评估分数列 */}
                       <TableCell>
-                        {(() => {
-                          const canFill = canFillScore(category.id, kpi.id, evalIndex)
-                          return (
-                            <ScoreDialog
-                              score={evaluator.score}
-                              remark={evaluator.remark}
-                              onScoreChange={(score, remark) => {
-                                onUpdateEvaluator(category.id, kpi.id, evaluator.id, "score", score)
-                                onUpdateEvaluator(category.id, kpi.id, evaluator.id, "remark", remark)
-                              }}
-                              disabled={!canFill}
-                              showRemark={mode === 'usage'}
-                            >
-                              <Button
-                                variant="ghost"
-                                className={`h-8 px-2 text-sm font-medium w-full ${
-                                  canFill 
-                                    ? "text-orange-600 hover:text-orange-700 hover:bg-orange-50" 
-                                    : "text-gray-400 cursor-not-allowed"
-                                }`}
+                        {showScoreInput ? (
+                          <Input
+                            type="number"
+                            value={evaluator.score ?? ''}
+                            onChange={(e) => {
+                              const value = e.target.value === '' ? undefined : Number(e.target.value)
+                              onUpdateEvaluator(category.id, kpi.id, evaluator.id, "score", value as number)
+                            }}
+                            placeholder="分数"
+                            className="w-20"
+                          />
+                        ) : (
+                          (() => {
+                            const canFill = canFillScore(category.id, kpi.id, evalIndex)
+                            return (
+                              <ScoreDialog
+                                score={evaluator.score}
+                                remark={evaluator.remark}
+                                onScoreChange={(score, remark) => {
+                                  onUpdateEvaluator(category.id, kpi.id, evaluator.id, "score", score)
+                                  onUpdateEvaluator(category.id, kpi.id, evaluator.id, "remark", remark)
+                                }}
                                 disabled={!canFill}
+                                showRemark={mode === 'usage'}
                               >
-                                {evaluator.score !== undefined 
-                                  ? `${evaluator.score} 分` 
-                                  : mode === 'template' ? "评分(试算)" : "评分"}
-                              </Button>
-                            </ScoreDialog>
-                          )
-                        })()}
+                                <Button
+                                  variant="ghost"
+                                  className={`h-8 px-2 text-sm font-medium w-full ${
+                                    canFill 
+                                      ? "text-orange-600 hover:text-orange-700 hover:bg-orange-50" 
+                                      : "text-gray-400 cursor-not-allowed"
+                                  }`}
+                                  disabled={!canFill}
+                                >
+                                  {evaluator.score !== undefined 
+                                    ? `${evaluator.score} 分` 
+                                    : mode === 'template' ? "评分(试算)" : "评分"}
+                                </Button>
+                              </ScoreDialog>
+                            )
+                          })()
+                        )}
                       </TableCell>
 
                       {/* 评估备注列 - 仅在使用模式下显示 */}
                       {mode === 'usage' && (
                         <TableCell>
-                          {evaluator.remark && (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <div className="text-xs text-gray-600 line-clamp-2 cursor-help">
-                                  {evaluator.remark}
-                                </div>
-                              </TooltipTrigger>
-                              <TooltipContent className="max-w-sm">
-                                <p className="text-sm">{evaluator.remark}</p>
-                              </TooltipContent>
-                            </Tooltip>
+                          {showScoreInput ? (
+                            <Input
+                              value={evaluator.remark ?? ''}
+                              onChange={(e) => onUpdateEvaluator(category.id, kpi.id, evaluator.id, "remark", e.target.value)}
+                              placeholder="备注"
+                              className="w-full"
+                            />
+                          ) : (
+                            evaluator.remark && (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="text-xs text-gray-600 line-clamp-2 cursor-help">
+                                    {evaluator.remark}
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-sm">
+                                  <p className="text-sm">{evaluator.remark}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            )
                           )}
                         </TableCell>
                       )}
