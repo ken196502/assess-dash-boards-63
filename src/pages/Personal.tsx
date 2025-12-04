@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Upload, Eye } from "lucide-react"
+import { Upload, Eye, Edit } from "lucide-react"
 import { Employee } from "@/types/employee"
 import { toast } from "@/hooks/use-toast"
 
@@ -40,6 +40,28 @@ const mockEmployees: Employee[] = [
     level: "主管",
     annualScore: 92.1,
     annualGrade: "A",
+    year: 2024
+  },
+  {
+    id: "4",
+    employeeId: "E004",
+    department: "人事部门",
+    name: "赵六",
+    position: "专员",
+    level: "员工",
+    annualScore: null,
+    annualGrade: null,
+    year: 2024
+  },
+  {
+    id: "5",
+    employeeId: "E005",
+    department: "财务部门",
+    name: "钱七",
+    position: "会计",
+    level: "员工",
+    annualScore: null,
+    annualGrade: null,
     year: 2024
   }
 ]
@@ -201,28 +223,39 @@ export default function Personal() {
                       </span>
                     </TableCell>
                     <TableCell className="whitespace-nowrap">
-                      <span className="font-semibold text-blue-600">{employee.annualScore}</span>
+                      {employee.annualScore !== null ? (
+                        <span className="font-semibold text-blue-600">{employee.annualScore}</span>
+                      ) : (
+                        <span className="text-gray-400">--</span>
+                      )}
                     </TableCell>
                     <TableCell className="whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                        ${employee.annualGrade === 'A' ? 'bg-green-100 text-green-800' : ''}
-                        ${employee.annualGrade === 'B' ? 'bg-blue-100 text-blue-800' : ''}
-                        ${employee.annualGrade === 'C' ? 'bg-yellow-100 text-yellow-800' : ''}
-                        ${employee.annualGrade === 'D' ? 'bg-orange-100 text-orange-800' : ''}
-                        ${employee.annualGrade === 'E' ? 'bg-red-100 text-red-800' : ''}
-                      `}>
-                        {employee.annualGrade}
-                      </span>
+                      {employee.annualGrade ? (
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                          ${employee.annualGrade === 'A' ? 'bg-green-100 text-green-800' : ''}
+                          ${employee.annualGrade === 'B' ? 'bg-blue-100 text-blue-800' : ''}
+                          ${employee.annualGrade === 'C' ? 'bg-yellow-100 text-yellow-800' : ''}
+                          ${employee.annualGrade === 'D' ? 'bg-orange-100 text-orange-800' : ''}
+                          ${employee.annualGrade === 'E' ? 'bg-red-100 text-red-800' : ''}
+                        `}>
+                          {employee.annualGrade}
+                        </span>
+                      ) : (
+                        <span className="text-gray-400">--</span>
+                      )}
                     </TableCell>
                     <TableCell className="whitespace-nowrap">
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => handleViewDetail(employee.id)}
-                        className="text-blue-600 hover:text-blue-700"
+                        className={employee.annualScore !== null ? "text-blue-600 hover:text-blue-700" : "text-orange-600 hover:text-orange-700"}
                       >
-                        <Eye className="w-4 h-4 mr-1" />
-                        查看详情
+                        {employee.annualScore !== null ? (
+                          <><Eye className="w-4 h-4 mr-1" />查看详情</>
+                        ) : (
+                          <><Edit className="w-4 h-4 mr-1" />去评分</>
+                        )}
                       </Button>
                     </TableCell>
                   </TableRow>

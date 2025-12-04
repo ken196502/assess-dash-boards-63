@@ -311,10 +311,10 @@ export default function Dashboard() {
                   <TableHeader>
                     <TableRow>
                       <TableHead className="whitespace-nowrap">部门</TableHead>
-                      <TableHead className="whitespace-nowrap">优秀 (90-100分)</TableHead>
-                      <TableHead className="whitespace-nowrap">良好 (80-89分)</TableHead>
-                      <TableHead className="whitespace-nowrap">合格 (70-79分)</TableHead>
-                      <TableHead className="whitespace-nowrap">待改进 (60分以下)</TableHead>
+                      <TableHead className="whitespace-nowrap">A（优秀）90分及以上</TableHead>
+                      <TableHead className="whitespace-nowrap">B（称职）[80,90)</TableHead>
+                      <TableHead className="whitespace-nowrap">C（基本称职）[60,80)</TableHead>
+                      <TableHead className="whitespace-nowrap">D（不称职）60分以下</TableHead>
                       <TableHead className="whitespace-nowrap">总人数</TableHead>
                       <TableHead className="whitespace-nowrap">平均分</TableHead>
                     </TableRow>
