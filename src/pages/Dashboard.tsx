@@ -13,7 +13,8 @@ import {
 } from 'recharts'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { TrendingUp, Users, Target, Award, Building2, User, Calendar } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { TrendingUp, Users, Target, Award, Building2, User, Calendar, Eye, EyeOff } from 'lucide-react'
 import { getDepartmentList } from '@/data/templateData'
 
 // 模拟数据
@@ -61,6 +62,7 @@ const COLORS = ['#10B981', '#F59E0B', '#EF4444', '#8B5CF6']
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<'department' | 'personal'>('department')
   const [selectedYear, setSelectedYear] = useState<string>('2024')
+  const [showCharts, setShowCharts] = useState<boolean>(false)
   
   // 生成年度选项
   const currentYear = new Date().getFullYear()
@@ -178,60 +180,85 @@ export default function Dashboard() {
 
         </div>
 
-        {/* 图表区域 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-          {/* 绩效分布 */}
-          <Card>
-            <CardHeader>
-              <CardTitle>绩效分布</CardTitle>
-              <CardDescription>
-                {activeTab === 'department' ? '部门绩效等级分布' : '个人绩效等级分布'}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={currentKpiData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({name, value}) => `${name} ${value}`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {currentKpiData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-
-          {/* 绩效分布 */}
-          <Card>
-            <CardHeader>
-              <CardTitle>绩效分数分布</CardTitle>
-              <CardDescription>
-                {activeTab === 'department' ? '部门绩效得分区间分布' : '员工绩效得分区间分布'}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <AreaChart data={currentPerformanceData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="range" />
-                  <YAxis />
-                  <Tooltip />
-                  <Area type="monotone" dataKey="count" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.6} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+        {/* 图表区域标题和切换 */}
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-gray-900">绩效分布图表</h2>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowCharts(!showCharts)}
+            className="flex items-center gap-2"
+          >
+            {showCharts ? (
+              <>
+                <EyeOff className="w-4 h-4" />
+                隐藏图表
+              </>
+            ) : (
+              <>
+                <Eye className="w-4 h-4" />
+                显示图表
+              </>
+            )}
+          </Button>
         </div>
+
+        {/* 图表区域 */}
+        {showCharts && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+            {/* 绩效分布 */}
+            <Card>
+              <CardHeader>
+                <CardTitle>绩效分布</CardTitle>
+                <CardDescription>
+                  {activeTab === 'department' ? '部门绩效等级分布' : '个人绩效等级分布'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={currentKpiData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({name, value}) => `${name} ${value}`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {currentKpiData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* 绩效分数分布 */}
+            <Card>
+              <CardHeader>
+                <CardTitle>绩效分数分布</CardTitle>
+                <CardDescription>
+                  {activeTab === 'department' ? '部门绩效得分区间分布' : '员工绩效得分区间分布'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <AreaChart data={currentPerformanceData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="range" />
+                    <YAxis />
+                    <Tooltip />
+                    <Area type="monotone" dataKey="count" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.6} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* 详细数据表格 */}
         <Card>

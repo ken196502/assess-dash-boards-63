@@ -5,7 +5,8 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+import DepartmentList from "./pages/DepartmentList";
+import DepartmentDetail from "./pages/DepartmentDetail";
 import Personal from "./pages/Personal";
 import PersonalDetail from "./pages/PersonalDetail";
 import TemplateManagement from "./pages/TemplateManagement";
@@ -33,7 +34,8 @@ const App = () => (
               <div className="flex-1 w-full">
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
-                  <Route path="/department" element={<Index />} />
+                  <Route path="/department-assessment" element={<DepartmentList />} />
+                  <Route path="/department/:id" element={<DepartmentDetail />} />
                   <Route path="/department-template" element={<DepartmentTemplateManagement />} />
                   <Route path="/personal" element={<Personal />} />
                   <Route path="/personal/:id" element={<PersonalDetail />} />

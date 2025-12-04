@@ -31,6 +31,7 @@ export default function UnifiedTemplateManagement() {
   const [templateToCopy, setTemplateToCopy] = useState<Template | null>(null)
   const [targetDepartment, setTargetDepartment] = useState<string>("")
   const [targetYear, setTargetYear] = useState<string>("2025")
+  const [targetLevel, setTargetLevel] = useState<string>("")
   const navigate = useNavigate()
 
   // 获取所有可用的部门列表
@@ -54,6 +55,7 @@ export default function UnifiedTemplateManagement() {
     setTemplateToCopy(template)
     setTargetDepartment("")
     setTargetYear(selectedYear)
+    setTargetLevel(template.level || "")
     setIsCopyDialogOpen(true)
   }
 
@@ -66,10 +68,20 @@ export default function UnifiedTemplateManagement() {
       })
       return
     }
+
+    if (activeTab === 'personal' && !targetLevel) {
+      toast({
+        title: "请完善信息",
+        description: "请填写职级",
+        variant: "destructive"
+      })
+      return
+    }
     
+    const levelText = activeTab === 'personal' ? `（${targetLevel}）` : ''
     toast({
       title: "复制成功",
-      description: `已将 ${templateToCopy?.department} 的模板复制到 ${targetDepartment} ${targetYear}年`,
+      description: `已将 ${templateToCopy?.department} 的模板复制到 ${targetDepartment} ${targetYear}年${levelText}`,
     })
     setIsCopyDialogOpen(false)
   }
@@ -245,6 +257,20 @@ export default function UnifiedTemplateManagement() {
                   </SelectContent>
                 </Select>
               </div>
+              {activeTab === 'personal' && (
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="target-level" className="text-right">
+                    职级
+                  </Label>
+                  <input
+                    id="target-level"
+                    value={targetLevel}
+                    onChange={(e) => setTargetLevel(e.target.value)}
+                    placeholder="请输入职级"
+                    className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  />
+                </div>
+              )}
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsCopyDialogOpen(false)}>

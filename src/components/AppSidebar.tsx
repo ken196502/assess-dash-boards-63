@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button"
 
 const items = [
   { title: "数据看板", url: "/", icon: BarChart3 },
-  { title: "部门考核管理", url: "/department", icon: Building2 },
+  { title: "部门考核管理", url: "/department-assessment", icon: Building2 },
   { title: "个人考核管理", url: "/personal", icon: User },
   { title: "考核模板管理", url: "/template-management", icon: FileText },
 ]
