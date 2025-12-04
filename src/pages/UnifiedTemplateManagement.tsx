@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Settings, Plus, FileText, Copy } from "lucide-react"
+import { Settings, Plus, FileText, Copy, Download } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
@@ -32,6 +32,11 @@ export default function UnifiedTemplateManagement() {
   const [targetDepartment, setTargetDepartment] = useState<string>("")
   const [targetYear, setTargetYear] = useState<string>("2025")
   const [targetLevel, setTargetLevel] = useState<string>("")
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false)
+  const [importType, setImportType] = useState<'department' | 'personal'>('department')
+  const [importDepartment, setImportDepartment] = useState<string>("")
+  const [importYear, setImportYear] = useState<string>("2025")
+  const [importLevel, setImportLevel] = useState<string>("")
   const navigate = useNavigate()
 
   // 获取所有可用的部门列表
@@ -86,6 +91,41 @@ export default function UnifiedTemplateManagement() {
     setIsCopyDialogOpen(false)
   }
 
+  const handleImportTemplate = (type: 'department' | 'personal') => {
+    setImportType(type)
+    setImportDepartment("")
+    setImportYear("2025")
+    setImportLevel("")
+    setIsImportDialogOpen(true)
+  }
+
+  const handleConfirmImport = () => {
+    if (!importDepartment || !importYear) {
+      toast({
+        title: "请完善信息",
+        description: "请选择部门和年份",
+        variant: "destructive"
+      })
+      return
+    }
+
+    if (importType === 'personal' && !importLevel) {
+      toast({
+        title: "请完善信息",
+        description: "请填写职级",
+        variant: "destructive"
+      })
+      return
+    }
+    
+    const levelText = importType === 'personal' ? `（${importLevel}）` : ''
+    toast({
+      title: "导入成功",
+      description: `已导入 ${importDepartment} ${importYear}年${levelText}的模板`,
+    })
+    setIsImportDialogOpen(false)
+  }
+
   const getTypeLabel = (type: 'department' | 'personal') => {
     return type === 'department' ? '部门考核' : '个人考核'
   }
@@ -99,10 +139,20 @@ export default function UnifiedTemplateManagement() {
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">考核模板管理</h1>
               <p className="text-sm md:text-base text-gray-600">统一管理部门考核和个人考核模板</p>
             </div>
-            <Button onClick={handleCreateTemplate} size="lg" className="bg-blue-600 hover:bg-blue-700">
-              <Plus className="w-5 h-5 mr-2" />
-              新建{getTypeLabel(activeTab)}模板
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button onClick={handleCreateTemplate} size="lg" className="bg-blue-600 hover:bg-blue-700">
+                <Plus className="w-5 h-5 mr-2" />
+                新建{getTypeLabel(activeTab)}模板
+              </Button>
+              <Button onClick={() => handleImportTemplate('department')} variant="outline" size="lg">
+                <Download className="w-5 h-5 mr-2" />
+                导入部门模板
+              </Button>
+              <Button onClick={() => handleImportTemplate('personal')} variant="outline" size="lg">
+                <Download className="w-5 h-5 mr-2" />
+                导入个人模板
+              </Button>
+            </div>
           </div>
 
           {/* 标签页切换和年份筛选 */}
@@ -272,12 +322,90 @@ export default function UnifiedTemplateManagement() {
                 </div>
               )}
             </div>
+            <div className="text-center border-t pt-3 text-sm text-blue-600">
+              <Button variant="link" className="p-0 h-auto text-blue-600" type="button">
+                下载模板文件
+              </Button>
+            </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsCopyDialogOpen(false)}>
                 取消
               </Button>
               <Button onClick={handleConfirmCopy}>
                 确认复制
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* 导入模板对话框 */}
+        <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>导入{importType === 'department' ? '部门' : '个人'}模板</DialogTitle>
+              <DialogDescription>
+                选择要导入的{importType === 'department' ? '部门' : '个人'}模板信息
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="import-department" className="text-right">
+                  部门
+                </Label>
+                <Select value={importDepartment} onValueChange={setImportDepartment}>
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="请选择部门" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {departmentList.map(dept => (
+                      <SelectItem key={dept} value={dept}>
+                        {dept}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="import-year" className="text-right">
+                  年份
+                </Label>
+                <Select value={importYear} onValueChange={setImportYear}>
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2025">2025</SelectItem>
+                    <SelectItem value="2024">2024</SelectItem>
+                    <SelectItem value="2023">2023</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {importType === 'personal' && (
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="import-level" className="text-right">
+                    职级
+                  </Label>
+                  <input
+                    id="import-level"
+                    value={importLevel}
+                    onChange={(e) => setImportLevel(e.target.value)}
+                    placeholder="请输入职级"
+                    className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  />
+                </div>
+              )}
+            </div>
+            <div className="text-center border-t pt-3 text-sm text-blue-600">
+              <Button variant="link" className="p-0 h-auto text-blue-600" type="button">
+                下载模板文件
+              </Button>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsImportDialogOpen(false)}>
+                取消
+              </Button>
+              <Button onClick={handleConfirmImport}>
+                确认导入
               </Button>
             </DialogFooter>
           </DialogContent>

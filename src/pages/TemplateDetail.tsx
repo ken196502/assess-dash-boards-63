@@ -54,7 +54,7 @@ interface TemplateInfo {
   id: string
   type: 'department' | 'personal'
   department: string
-  level?: '员工' | '主管'
+  level?: string
 }
 
 export default function TemplateDetail() {
@@ -368,15 +368,12 @@ export default function TemplateDetail() {
               </div>
               {templateInfo.type === 'personal' && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">职级</label>
-                  <select
+                  <label className="block text-sm font-medium text-gray-700 mb-1">职级/职务</label>
+                  <Input
                     value={templateInfo.level}
-                    onChange={(e) => setTemplateInfo({ ...templateInfo, level: e.target.value as '员工' | '主管' })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="员工">员工</option>
-                    <option value="主管">主管</option>
-                  </select>
+                    onChange={(e) => setTemplateInfo({ ...templateInfo, level: e.target.value })}
+                    placeholder="请输入职级"
+                  />
                 </div>
               )}
               <div>

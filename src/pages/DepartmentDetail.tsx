@@ -69,8 +69,8 @@ export default function DepartmentDetail() {
   const [editingCategory, setEditingCategory] = useState<string | null>(null)
 
   const handleComplete = () => {
-    toast({ title: "已完成", description: "返回看板" })
-    navigate("/")
+    toast({ title: "已完成", description: "返回列表" })
+    navigate(-1)
   }
 
   const updateKPI = (categoryId: string, kpiId: string, field: keyof KPI, value: string | number) => {
@@ -286,7 +286,7 @@ export default function DepartmentDetail() {
             onMoveEvaluator={moveEvaluator}
             mode="usage"
             showScoreInput={true}
-            completeButtonConfig={{ label: "完成并返回看板", onClick: handleComplete }}
+            completeButtonConfig={{ label: "完成并返回列表", onClick: handleComplete }}
           />
         </div>
       </div>

@@ -14,6 +14,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { TrendingUp, Users, Target, Award, Building2, User, Calendar, Eye, EyeOff } from 'lucide-react'
 import { getDepartmentList } from '@/data/templateData'
 
@@ -305,27 +306,101 @@ export default function Dashboard() {
                 </table>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="text-sm text-gray-600">优秀 (90-100分)</div>
-                  <div className="text-2xl font-bold text-green-600">12人</div>
-                  <div className="text-xs text-gray-500">占比 15%</div>
-                </div>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="text-sm text-gray-600">良好 (80-89分)</div>
-                  <div className="text-2xl font-bold text-blue-600">28人</div>
-                  <div className="text-xs text-gray-500">占比 35%</div>
-                </div>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="text-sm text-gray-600">合格 (70-79分)</div>
-                  <div className="text-2xl font-bold text-yellow-600">24人</div>
-                  <div className="text-xs text-gray-500">占比 30%</div>
-                </div>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="text-sm text-gray-600">待改进 (60-69分)</div>
-                  <div className="text-2xl font-bold text-orange-600">12人</div>
-                  <div className="text-xs text-gray-500">占比 15%</div>
-                </div>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="whitespace-nowrap">部门</TableHead>
+                      <TableHead className="whitespace-nowrap">优秀 (90-100分)</TableHead>
+                      <TableHead className="whitespace-nowrap">良好 (80-89分)</TableHead>
+                      <TableHead className="whitespace-nowrap">合格 (70-79分)</TableHead>
+                      <TableHead className="whitespace-nowrap">待改进 (60分以下)</TableHead>
+                      <TableHead className="whitespace-nowrap">总人数</TableHead>
+                      <TableHead className="whitespace-nowrap">平均分</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {departmentScores.map((dept) => {
+                      const excellent = Math.floor(dept.total * 0.15)
+                      const good = Math.floor(dept.total * 0.35)
+                      const qualified = Math.floor(dept.total * 0.30)
+                      const needsImprovement = dept.total - excellent - good - qualified
+                      return (
+                        <TableRow key={dept.name}>
+                          <TableCell className="font-medium whitespace-nowrap">{dept.name}</TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            <div className="text-green-600 font-semibold">{excellent}人</div>
+                            <div className="text-xs text-gray-500">{Math.round(excellent / dept.total * 100)}%</div>
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            <div className="text-blue-600 font-semibold">{good}人</div>
+                            <div className="text-xs text-gray-500">{Math.round(good / dept.total * 100)}%</div>
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            <div className="text-yellow-600 font-semibold">{qualified}人</div>
+                            <div className="text-xs text-gray-500">{Math.round(qualified / dept.total * 100)}%</div>
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            <div className="text-orange-600 font-semibold">{needsImprovement}人</div>
+                            <div className="text-xs text-gray-500">{Math.round(needsImprovement / dept.total * 100)}%</div>
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap font-semibold">{dept.total}</TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            <span className={`font-semibold ${
+                              dept.score >= 90 ? 'text-green-600' : 
+                              dept.score >= 80 ? 'text-blue-600' : 
+                              dept.score >= 70 ? 'text-yellow-600' : 'text-red-600'
+                            }`}>
+                              {dept.score}
+                            </span>
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })}
+                    {/* 合计行 */}
+                    <TableRow className="bg-gray-50 font-semibold">
+                      <TableCell className="whitespace-nowrap">全部合计</TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        <div className="text-green-600">
+                          {departmentScores.reduce((sum, dept) => sum + Math.floor(dept.total * 0.15), 0)}人
+                        </div>
+                        <div className="text-xs text-gray-500">15%</div>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        <div className="text-blue-600">
+                          {departmentScores.reduce((sum, dept) => sum + Math.floor(dept.total * 0.35), 0)}人
+                        </div>
+                        <div className="text-xs text-gray-500">35%</div>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        <div className="text-yellow-600">
+                          {departmentScores.reduce((sum, dept) => sum + Math.floor(dept.total * 0.30), 0)}人
+                        </div>
+                        <div className="text-xs text-gray-500">30%</div>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        <div className="text-orange-600">
+                          {departmentScores.reduce((sum, dept) => {
+                            const excellent = Math.floor(dept.total * 0.15)
+                            const good = Math.floor(dept.total * 0.35)
+                            const qualified = Math.floor(dept.total * 0.30)
+                            return sum + (dept.total - excellent - good - qualified)
+                          }, 0)}人
+                        </div>
+                        <div className="text-xs text-gray-500">20%</div>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        {departmentScores.reduce((sum, dept) => sum + dept.total, 0)}人
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        <span className="text-blue-600">
+                          {(departmentScores.reduce((sum, dept) => sum + dept.score * dept.total, 0) / 
+                            departmentScores.reduce((sum, dept) => sum + dept.total, 0)).toFixed(1)}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
               </div>
             )}
           </CardContent>
