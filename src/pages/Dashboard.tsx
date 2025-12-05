@@ -318,6 +318,7 @@ export default function Dashboard() {
                   <TableHeader>
                     <TableRow>
                       <TableHead className="whitespace-nowrap">部门</TableHead>
+                      <TableHead className="whitespace-nowrap">部门绩效</TableHead>
                       <TableHead className="whitespace-nowrap">A（优秀）90分及以上</TableHead>
                       <TableHead className="whitespace-nowrap">B（称职）[80,90)</TableHead>
                       <TableHead className="whitespace-nowrap">C（基本称职）[60,80)</TableHead>
@@ -339,6 +340,19 @@ export default function Dashboard() {
                             onClick={() => navigate(`/personal?department=${encodeURIComponent(dept.name)}`)}
                           >
                             {dept.name}
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            <span className={`px-2 py-1 rounded-full text-xs ${
+                              dept.score >= 90 
+                                ? 'bg-green-100 text-green-800' 
+                                : dept.score >= 80
+                                ? 'bg-blue-100 text-blue-800'
+                                : dept.score >= 70
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {dept.score >= 90 ? 'A' : dept.score >= 80 ? 'B' : dept.score >= 70 ? 'C' : 'D'}
+                            </span>
                           </TableCell>
                           <TableCell className="whitespace-nowrap">
                             <div className="text-green-600 font-semibold">{excellent}人</div>
@@ -372,6 +386,7 @@ export default function Dashboard() {
                     {/* 合计行 */}
                     <TableRow className="bg-gray-50 font-semibold">
                       <TableCell className="whitespace-nowrap">全部合计</TableCell>
+                      <TableCell className="whitespace-nowrap">-</TableCell>
                       <TableCell className="whitespace-nowrap">
                         <div className="text-green-600">
                           {departmentScores.reduce((sum, dept) => sum + Math.floor(dept.total * 0.15), 0)}人
