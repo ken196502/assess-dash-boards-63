@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   XAxis,
   YAxis,
@@ -61,6 +62,7 @@ const personalPerformanceData = [
 const COLORS = ['#10B981', '#F59E0B', '#EF4444', '#8B5CF6']
 
 export default function Dashboard() {
+  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<'department' | 'personal'>('department')
   const [selectedYear, setSelectedYear] = useState<string>('2024')
   const [showCharts, setShowCharts] = useState<boolean>(false)
@@ -285,7 +287,12 @@ export default function Dashboard() {
                   <tbody>
                     {departmentScores.map((dept) => (
                       <tr key={dept.name} className="border-b hover:bg-gray-50">
-                        <td className="p-2 font-medium">{dept.name}</td>
+                        <td 
+                          className="p-2 font-medium text-blue-600 cursor-pointer hover:underline"
+                          onClick={() => navigate('/department-assessment')}
+                        >
+                          {dept.name}
+                        </td>
                         <td className="p-2">{dept.score}</td>
                         <td className="p-2">
                           <span className={`px-2 py-1 rounded-full text-xs ${
@@ -327,7 +334,12 @@ export default function Dashboard() {
                       const needsImprovement = dept.total - excellent - good - qualified
                       return (
                         <TableRow key={dept.name}>
-                          <TableCell className="font-medium whitespace-nowrap">{dept.name}</TableCell>
+                          <TableCell 
+                            className="font-medium whitespace-nowrap text-blue-600 cursor-pointer hover:underline"
+                            onClick={() => navigate(`/personal?department=${encodeURIComponent(dept.name)}`)}
+                          >
+                            {dept.name}
+                          </TableCell>
                           <TableCell className="whitespace-nowrap">
                             <div className="text-green-600 font-semibold">{excellent}人</div>
                             <div className="text-xs text-gray-500">{Math.round(excellent / dept.total * 100)}%</div>

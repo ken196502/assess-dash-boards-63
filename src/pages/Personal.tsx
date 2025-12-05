@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -68,6 +68,7 @@ const mockEmployees: Employee[] = [
 
 export default function Personal() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [employees] = useState<Employee[]>(mockEmployees)
   const [filters, setFilters] = useState({
     department: "all",
@@ -76,6 +77,14 @@ export default function Personal() {
     level: "all",
     year: "2024"
   })
+
+  // 从URL参数初始化部门筛选
+  useEffect(() => {
+    const departmentParam = searchParams.get('department')
+    if (departmentParam) {
+      setFilters(prev => ({ ...prev, department: departmentParam }))
+    }
+  }, [searchParams])
 
   const handleImportEmployees = () => {
     toast({
