@@ -1,7 +1,7 @@
 export interface AssessmentTemplate {
   id: string
   department: string // 部门
-  level: '员工' | '主管' // 职级
+  level: '非管理层' | '管理层' // 职级
   changeLog: string // 变动日志
   items: TemplateItem[]
 }

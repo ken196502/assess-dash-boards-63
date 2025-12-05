@@ -3,7 +3,7 @@ export interface TemplateData {
   id: string
   type: 'department' | 'personal'
   department: string
-  level?: '员工' | '主管'
+  level?: '非管理层' | '管理层'
   changeLog: string
   lastModified: string
   version: string
@@ -51,7 +51,7 @@ export const templateData: TemplateData[] = [
     id: "personal-1",
     type: "personal",
     department: "销售部门",
-    level: "主管",
+    level: "管理层",
     changeLog: "2024-01-15 admin 创建模板",
     lastModified: "2024-01-15",
     version: "20240115",
@@ -61,7 +61,7 @@ export const templateData: TemplateData[] = [
     id: "personal-2",
     type: "personal",
     department: "技术部门",
-    level: "员工",
+    level: "非管理层",
     changeLog: "2024-02-20 admin 编辑模板",
     lastModified: "2024-02-20",
     version: "20240220",
@@ -71,7 +71,7 @@ export const templateData: TemplateData[] = [
     id: "personal-3",
     type: "personal",
     department: "销售部门",
-    level: "员工",
+    level: "非管理层",
     changeLog: "2024-02-25 admin 创建模板",
     lastModified: "2024-02-25",
     version: "20240225",

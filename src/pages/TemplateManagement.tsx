@@ -12,14 +12,14 @@ const mockTemplates: AssessmentTemplate[] = [
   {
     id: "1",
     department: "业务部门",
-    level: "主管",
+    level: "管理层",
     changeLog: "2024-01-15 创建模板",
     items: []
   },
   {
     id: "2",
     department: "技术部门",
-    level: "员工",
+    level: "非管理层",
     changeLog: "2024-02-20 更新权重",
     items: []
   }
@@ -308,7 +308,7 @@ export default function TemplateManagement() {
                   <TableCell className="font-medium">{template.department}</TableCell>
                   <TableCell>
                     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
-                      ${template.level === '主管' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'}
+                      ${template.level === '管理层' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'}
                     `}>
                       {template.level}
                     </span>

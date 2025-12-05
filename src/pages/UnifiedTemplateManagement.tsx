@@ -14,7 +14,7 @@ interface Template {
   id: string
   type: 'department' | 'personal'
   department: string
-  level?: '员工' | '主管'
+  level?: '非管理层' | '管理层'
   changeLog: string
   lastModified: string
   version: string
@@ -60,7 +60,7 @@ export default function UnifiedTemplateManagement() {
     setTemplateToCopy(template)
     setTargetDepartment("")
     setTargetYear(selectedYear)
-    setTargetLevel(template.level || "")
+    setTargetLevel("")
     setIsCopyDialogOpen(true)
   }
 
@@ -217,7 +217,7 @@ export default function UnifiedTemplateManagement() {
                   <TableCell className="font-medium whitespace-nowrap">{template.department}</TableCell>
                   {activeTab === 'personal' && (
                     <TableCell className="whitespace-nowrap">
-                      <Badge variant={template.level === '主管' ? 'default' : 'secondary'}>
+                      <Badge variant={template.level === '管理层' ? 'default' : 'secondary'}>
                         {template.level}
                       </Badge>
                     </TableCell>
@@ -310,13 +310,13 @@ export default function UnifiedTemplateManagement() {
               {activeTab === 'personal' && (
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="target-level" className="text-right">
-                    职级
+                    职务
                   </Label>
                   <input
                     id="target-level"
                     value={targetLevel}
                     onChange={(e) => setTargetLevel(e.target.value)}
-                    placeholder="请输入职级"
+                    placeholder="请输入职务"
                     className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   />
                 </div>
@@ -383,13 +383,13 @@ export default function UnifiedTemplateManagement() {
               {importType === 'personal' && (
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="import-level" className="text-right">
-                    职级
+                    职务
                   </Label>
                   <input
                     id="import-level"
                     value={importLevel}
                     onChange={(e) => setImportLevel(e.target.value)}
-                    placeholder="请输入职级"
+                    placeholder="请输入职务"
                     className="col-span-3 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   />
                 </div>

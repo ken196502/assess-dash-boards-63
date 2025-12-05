@@ -184,8 +184,7 @@ export default function Dashboard() {
         </div>
 
         {/* 图表区域标题和切换 */}
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">绩效分布图表</h2>
+        <div className="flex items-center justify-end">
           <Button
             variant="outline"
             size="sm"
@@ -245,7 +244,7 @@ export default function Dashboard() {
               <CardHeader>
                 <CardTitle>绩效分数分布</CardTitle>
                 <CardDescription>
-                  {activeTab === 'department' ? '部门绩效得分区间分布' : '员工绩效得分区间分布'}
+                  {activeTab === 'department' ? '部门绩效得分区间分布' : '非管理层绩效得分区间分布'}
                 </CardDescription>
               </CardHeader>
               <CardContent>

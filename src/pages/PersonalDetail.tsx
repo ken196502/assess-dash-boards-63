@@ -6,7 +6,7 @@ import { DepartmentAssessmentTable } from "@/components/DepartmentAssessmentTabl
 import { Category } from "@/types/assessment"
 import { toast } from "@/hooks/use-toast"
 
-// 模拟员工详情数据
+// 模拟非管理层详情数据
 const mockEmployeeDetail = {
   id: "1",
   employeeId: "E001",
@@ -29,7 +29,7 @@ const mockCategories: Category[] = [
         weight: "50%",
         evaluators: [
           { id: "eval1", name: "张三", position: "部门经理", weight: "50%", score: 85 },
-          { id: "eval2", name: "李四", position: "财务主管", weight: "50%", score: 90 },
+          { id: "eval2", name: "李四", position: "财务管理层", weight: "50%", score: 90 },
         ],
         description:
           "口径说明：与财务部报送总部口径一致，已扣除手续费支出及利息支出，不考虑协同收入，得分=实际完成值/目标值，120分封顶。",
@@ -121,7 +121,7 @@ export default function PersonalDetail() {
           </Button>
 
           <div className="bg-white p-4 md:p-6 rounded-lg border border-gray-200 mb-4 md:mb-6">
-            <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">员工考核详情</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">非管理层考核详情</h1>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div>
                 <span className="text-gray-500">工号：</span>
@@ -136,7 +136,7 @@ export default function PersonalDetail() {
                 <span className="font-medium">{mockEmployeeDetail.department}</span>
               </div>
               <div>
-                <span className="text-gray-500">职位：</span>
+                <span className="text-gray-500">职务：</span>
                 <span className="font-medium">{mockEmployeeDetail.position}</span>
               </div>
             </div>

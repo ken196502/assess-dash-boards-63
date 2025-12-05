@@ -72,7 +72,7 @@ export default function TemplateDetail() {
     id: isNew ? '' : id || '',
     type: isNew ? templateType : (existingTemplate?.type as 'department' | 'personal' || 'department'),
     department: isNew ? '' : (existingTemplate?.department || '示例部门'),
-    level: isNew ? '员工' : (existingTemplate?.level as '员工' | '主管' || '员工')
+    level: isNew ? '非管理层' : (existingTemplate?.level as '非管理层' | '管理层' || '非管理层')
   })
 
   const [categories, setCategories] = useState<Category[]>(isNew ? [] : mockDepartmentTemplate)
@@ -379,11 +379,11 @@ export default function TemplateDetail() {
               </div>
               {templateInfo.type === 'personal' && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">职级/职务</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">职务</label>
                   <Input
                     value={templateInfo.level}
                     onChange={(e) => setTemplateInfo({ ...templateInfo, level: e.target.value })}
-                    placeholder="请输入职级"
+                    placeholder="请输入职务"
                   />
                 </div>
               )}

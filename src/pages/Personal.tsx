@@ -15,7 +15,7 @@ const mockEmployees: Employee[] = [
     department: "业务部门",
     name: "张三",
     position: "经理",
-    level: "主管",
+    level: "管理层",
     annualScore: 85.5,
     annualGrade: "A",
     year: 2024
@@ -26,7 +26,7 @@ const mockEmployees: Employee[] = [
     department: "技术部门",
     name: "李四",
     position: "工程师",
-    level: "员工",
+    level: "非管理层",
     annualScore: 78.3,
     annualGrade: "B",
     year: 2024
@@ -36,8 +36,8 @@ const mockEmployees: Employee[] = [
     employeeId: "E003",
     department: "业务部门",
     name: "王五",
-    position: "主管",
-    level: "主管",
+    position: "管理层",
+    level: "管理层",
     annualScore: 92.1,
     annualGrade: "A",
     year: 2024
@@ -48,7 +48,7 @@ const mockEmployees: Employee[] = [
     department: "人事部门",
     name: "赵六",
     position: "专员",
-    level: "员工",
+    level: "非管理层",
     annualScore: null,
     annualGrade: null,
     year: 2024
@@ -59,7 +59,7 @@ const mockEmployees: Employee[] = [
     department: "财务部门",
     name: "钱七",
     position: "会计",
-    level: "员工",
+    level: "非管理层",
     annualScore: null,
     annualGrade: null,
     year: 2024
@@ -89,7 +89,7 @@ export default function Personal() {
   const handleImportEmployees = () => {
     toast({
       title: "导入功能",
-      description: "员工信息导入功能尚未开发",
+      description: "非管理层信息导入功能尚未开发",
     })
   }
 
@@ -124,11 +124,11 @@ export default function Personal() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4 md:mb-6">
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">个人考核管理</h1>
-              <p className="text-sm md:text-base text-gray-600">管理员工个人绩效考核信息</p>
+              <p className="text-sm md:text-base text-gray-600">管理非管理层个人绩效考核信息</p>
             </div>
             <Button onClick={handleImportEmployees} className="bg-blue-600 hover:bg-blue-700">
               <Upload className="w-4 h-4 mr-2" />
-              导入员工信息
+              导入人员信息
             </Button>
           </div>
 
@@ -163,9 +163,9 @@ export default function Personal() {
               </div>
               
               <div>
-                <label className="text-sm font-medium mb-2 block">职位</label>
+                <label className="text-sm font-medium mb-2 block">职务</label>
                 <Input 
-                  placeholder="搜索职位" 
+                  placeholder="搜索职务" 
                   value={filters.position}
                   onChange={(e) => setFilters({...filters, position: e.target.value})}
                 />
@@ -182,8 +182,8 @@ export default function Personal() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">全部职级</SelectItem>
-                    <SelectItem value="员工">员工</SelectItem>
-                    <SelectItem value="主管">主管</SelectItem>
+                    <SelectItem value="非管理层">非管理层</SelectItem>
+                    <SelectItem value="管理层">管理层</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -214,7 +214,7 @@ export default function Personal() {
           </div>
         </div>
 
-        {/* 员工列表表格 */}
+        {/* 非管理层列表表格 */}
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden overflow-x-auto">
           <Table>
             <TableHeader>
@@ -222,7 +222,7 @@ export default function Personal() {
                 <TableHead className="whitespace-nowrap">工号</TableHead>
                 <TableHead className="whitespace-nowrap">部门</TableHead>
                 <TableHead className="whitespace-nowrap">姓名</TableHead>
-                <TableHead className="whitespace-nowrap">职位</TableHead>
+                <TableHead className="whitespace-nowrap">职务</TableHead>
                 <TableHead className="whitespace-nowrap">职级</TableHead>
                 <TableHead className="whitespace-nowrap">年度绩效考核分数</TableHead>
                 <TableHead className="whitespace-nowrap">年度考核等级</TableHead>
@@ -239,7 +239,7 @@ export default function Personal() {
                     <TableCell className="whitespace-nowrap">{employee.position}</TableCell>
                     <TableCell className="whitespace-nowrap">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
-                        ${employee.level === '主管' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'}
+                        ${employee.level === '管理层' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'}
                       `}>
                         {employee.level}
                       </span>
@@ -285,7 +285,7 @@ export default function Personal() {
               ) : (
                 <TableRow>
                   <TableCell colSpan={8} className="text-center py-8 text-gray-500 whitespace-nowrap">
-                    暂无符合条件的员工数据
+                    暂无符合条件的非管理层数据
                   </TableCell>
                 </TableRow>
               )}
