@@ -66,12 +66,12 @@ export function EvaluatorRow({
                 placeholder="评价人姓名"
                 className="text-right"
               />
-              <Input
+              {/* <Input
                 value={evaluator.position || ''}
                 onChange={(e) => onUpdateEvaluator(category.id, kpi.id, evaluator.id, "position", e.target.value)}
                 placeholder="职务"
                 className="text-right text-xs"
-              />
+              /> */}
             </div>
             {kpi.evaluators.length > 1 && (
               <Button
