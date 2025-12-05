@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Eye, Calendar, Download } from "lucide-react"
+import { Edit, Eye, Calendar, Download } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 
 interface DepartmentAssessment {
@@ -31,8 +31,8 @@ export default function DepartmentList() {
   const currentYear = new Date().getFullYear()
   const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - i).map(year => year.toString())
 
-  const handleViewDetail = (departmentId: string) => {
-    navigate(`/department/${departmentId}`)
+  const handleViewDetail = (department: DepartmentAssessment) => {
+    navigate(`/department/${department.id}`, { state: { department } })
   }
 
   const filteredDepartments = departments.filter(dept => dept.year.toString() === selectedYear)
@@ -125,11 +125,19 @@ export default function DepartmentList() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => handleViewDetail(dept.id)}
+                        onClick={() => handleViewDetail(dept)}
                         className="text-blue-600 hover:text-blue-700"
                       >
-                        <Eye className="w-4 h-4 mr-1" />
-                        查看详情
+                        {dept.score !== null ? (
+                          <Eye className="w-4 h-4 mr-1" />
+                        ) : (
+                          <Edit className="w-4 h-4 mr-1 text-orange-500" />
+                        )}
+                        {dept.score !== null ? (
+                          <span>查看详情</span>
+                        ) : (
+                          <span className="text-orange-500">去评价</span>
+                        )}
                       </Button>
                     </TableCell>
                   </TableRow>
