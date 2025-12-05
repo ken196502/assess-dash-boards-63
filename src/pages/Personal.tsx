@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Upload, Eye, Edit } from "lucide-react"
+import { Upload, Eye, Edit, Download } from "lucide-react"
 import { Employee } from "@/types/employee"
 import { toast } from "@/hooks/use-toast"
 
@@ -93,6 +93,13 @@ export default function Personal() {
     })
   }
 
+  const handleExport = () => {
+    toast({
+      title: "导出功能",
+      description: "个人考核数据导出功能尚未开发",
+    })
+  }
+
   const handleViewDetail = (employeeId: string) => {
     navigate(`/personal/${employeeId}`)
   }
@@ -127,7 +134,7 @@ export default function Personal() {
 
           {/* 筛选区域 */}
           <div className="bg-white p-4 rounded-lg border border-gray-200 mb-4 md:mb-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">部门</label>
                 <Select 
@@ -196,6 +203,12 @@ export default function Personal() {
                     <SelectItem value="2022">2022</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="flex items-end">
+                <Button variant="outline" onClick={handleExport}>
+                  <Download className="w-4 h-4 mr-2" />
+                  导出
+                </Button>
               </div>
             </div>
           </div>
