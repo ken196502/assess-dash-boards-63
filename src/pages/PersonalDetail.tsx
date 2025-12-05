@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import { DepartmentAssessmentTable } from "@/components/DepartmentAssessmentTable"
 import { Category } from "@/types/assessment"
+import { toast } from "@/hooks/use-toast"
 
 // 模拟员工详情数据
 const mockEmployeeDetail = {
@@ -27,8 +28,8 @@ const mockCategories: Category[] = [
         target: "1000万元",
         weight: "50%",
         evaluators: [
-          { id: "eval1", name: "张三", weight: "50%", score: 85 },
-          { id: "eval2", name: "李四", weight: "50%", score: 90 },
+          { id: "eval1", name: "张三", position: "部门经理", weight: "50%", score: 85 },
+          { id: "eval2", name: "李四", position: "财务主管", weight: "50%", score: 90 },
         ],
         description:
           "口径说明：与财务部报送总部口径一致，已扣除手续费支出及利息支出，不考虑协同收入，得分=实际完成值/目标值，120分封顶。",
@@ -46,8 +47,8 @@ const mockCategories: Category[] = [
         target: "新增50家",
         weight: "50%",
         evaluators: [
-          { id: "eval6", name: "董事长", weight: "70%", score: 88 },
-          { id: "eval7", name: "行政总裁", weight: "30%" },
+          { id: "eval6", name: "王五", position: "董事长", weight: "70%", score: 88 },
+          { id: "eval7", name: "赵六", position: "行政总裁", weight: "30%" },
         ],
         description: "客户拓展的具体考核标准和计算方式，包括新客户数量、客户质量等维度的综合评价。",
       },
@@ -59,8 +60,50 @@ export default function PersonalDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [categories] = useState<Category[]>(mockCategories)
+  
+  // 人力资源修正评估状态
+  const [hrAdjustment, setHrAdjustment] = useState<{
+    score?: number
+    remark?: string
+  }>({})
 
+  // 总分行的提交按钮
   const handleComplete = () => {
+    toast({
+      title: "考核完成",
+      description: "考核结果已提交",
+    })
+    navigate("/personal")
+  }
+  
+  // 处理人力资源修正评估变更
+  const handleHRAdjustmentChange = (field: 'score' | 'remark', value: number | string | undefined) => {
+    setHrAdjustment(prev => ({
+      ...prev,
+      [field]: value
+    }))
+  }
+  
+  // 提交人力资源修正评估
+  const handleHRSubmit = () => {
+    if (!hrAdjustment.score && !hrAdjustment.remark) {
+      toast({
+        title: "提交失败",
+        description: "请至少填写修正分数或修正备注",
+        variant: "destructive"
+      })
+      return
+    }
+    
+    // 这里可以调用API保存修正评估数据
+    console.log('提交人力资源修正评估:', hrAdjustment)
+    
+    toast({
+      title: "人力资源修正评估提交成功",
+      description: `修正评估已提交${hrAdjustment.score ? `，修正分数：${hrAdjustment.score}` : ''}`,
+    })
+    
+    // 提交后返回列表
     navigate("/personal")
   }
 
@@ -106,7 +149,11 @@ export default function PersonalDetail() {
             categories={categories}
             readOnly={true}
             canRemoveCategory={false}
-            completeButtonConfig={{ label: "完成并返回列表", onClick: handleComplete }}
+            showHRAdjustment={true}
+            hrAdjustment={hrAdjustment}
+            onHRAdjustmentChange={handleHRAdjustmentChange}
+            onHRSubmit={handleHRSubmit}
+            completeButtonConfig={{ label: "提交并返回", onClick: handleComplete }}
           />
         </div>
       </div>

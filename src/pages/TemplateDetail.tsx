@@ -25,8 +25,8 @@ const mockDepartmentTemplate: Category[] = [
         weight: "60%",
         description: "年度销售目标完成情况",
         evaluators: [
-          { id: "eval1", name: "直属上级", weight: "60%", score: undefined },
-          { id: "eval2", name: "部门总监", weight: "40%", score: undefined },
+          { id: "eval1", name: "张三", position: "直属上级", weight: "60%", score: undefined },
+          { id: "eval2", name: "李四", position: "部门总监", weight: "40%", score: undefined },
         ]
       }
     ]
@@ -43,7 +43,7 @@ const mockDepartmentTemplate: Category[] = [
         weight: "40%",
         description: "岗位所需专业技能掌握程度",
         evaluators: [
-          { id: "eval3", name: "直属上级", weight: "100%", score: undefined },
+          { id: "eval3", name: "王五", position: "直属上级", weight: "100%", score: undefined },
         ]
       }
     ]
@@ -132,7 +132,9 @@ export default function TemplateDetail() {
   }
 
   const handleUpdateEvaluator = (categoryId: string, kpiId: string, evaluatorId: string, field: keyof Evaluator, value: string | number | boolean) => {
-    setCategories(categories.map(cat => {
+    console.log('handleUpdateEvaluator 被调用:', { categoryId, kpiId, evaluatorId, field, value })
+    
+    const newCategories = categories.map(cat => {
       if (cat.id === categoryId) {
         return {
           ...cat,
@@ -140,9 +142,15 @@ export default function TemplateDetail() {
             if (kpi.id === kpiId) {
               return {
                 ...kpi,
-                evaluators: kpi.evaluators.map(evaluator => 
-                  evaluator.id === evaluatorId ? { ...evaluator, [field]: value } : evaluator
-                )
+                evaluators: kpi.evaluators.map(evaluator => {
+                  if (evaluator.id === evaluatorId) {
+                    console.log('找到匹配的evaluator，更新前:', evaluator)
+                    const updatedEvaluator = { ...evaluator, [field]: value }
+                    console.log('更新后:', updatedEvaluator)
+                    return updatedEvaluator
+                  }
+                  return evaluator
+                })
               }
             }
             return kpi
@@ -150,7 +158,10 @@ export default function TemplateDetail() {
         }
       }
       return cat
-    }))
+    })
+    
+    console.log('准备设置新的categories:', newCategories)
+    setCategories(newCategories)
   }
 
   const handleAddEvaluator = (categoryId: string, kpiId: string) => {
@@ -413,7 +424,10 @@ export default function TemplateDetail() {
           onCancelEdit={handleCancelEdit}
           onUpdateCategory={handleUpdateCategory}
           onUpdateKPI={handleUpdateKPI}
-          onUpdateEvaluator={handleUpdateEvaluator}
+          onUpdateEvaluator={(categoryId, kpiId, evaluatorId, field, value) => {
+            console.log('TemplateDetail中的onUpdateEvaluator被调用:', {categoryId, kpiId, evaluatorId, field, value})
+            return handleUpdateEvaluator(categoryId, kpiId, evaluatorId, field, value)
+          }}
           onAddEvaluator={handleAddEvaluator}
           onRemoveEvaluator={handleRemoveEvaluator}
           onAddKPI={handleAddKPI}

@@ -18,6 +18,14 @@ interface DepartmentAssessmentTableProps {
   readOnly?: boolean
   mode?: 'template' | 'usage' // 模板设置模式 或 使用模式
   completeButtonConfig?: { label: string, onClick: () => void } // 完成按钮配置
+  // 人力资源修正评估相关
+  showHRAdjustment?: boolean
+  hrAdjustment?: {
+    score?: number
+    remark?: string
+  }
+  onHRAdjustmentChange?: (field: 'score' | 'remark', value: number | string | undefined) => void
+  onHRSubmit?: () => void
 }
 
 export function DepartmentAssessmentTable({
@@ -35,7 +43,11 @@ export function DepartmentAssessmentTable({
   canRemoveCategory = false,
   readOnly = false,
   mode = 'usage',
-  completeButtonConfig
+  completeButtonConfig,
+  showHRAdjustment = false,
+  hrAdjustment,
+  onHRAdjustmentChange,
+  onHRSubmit
 }: DepartmentAssessmentTableProps) {
   const [editingCategory, setEditingCategory] = useState<string | null>(null)
 
@@ -74,6 +86,10 @@ export function DepartmentAssessmentTable({
       onMoveEvaluator={onMoveEvaluator || noop}
       mode={mode}
       completeButtonConfig={completeButtonConfig}
+      showHRAdjustment={showHRAdjustment}
+      hrAdjustment={hrAdjustment}
+      onHRAdjustmentChange={onHRAdjustmentChange}
+      onHRSubmit={onHRSubmit}
     />
   )
 }

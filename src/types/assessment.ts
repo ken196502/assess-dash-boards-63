@@ -2,6 +2,7 @@
 export interface Evaluator {
   id: string
   name: string
+  position?: string // 职务
   weight: string
   score?: number // 每个评估人的分数
   remark?: string // 评分备注
