@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Eye, Calendar } from "lucide-react"
+import { Eye, Calendar, Download } from "lucide-react"
+import { toast } from "@/hooks/use-toast"
 
 interface DepartmentAssessment {
   id: string
@@ -36,6 +37,13 @@ export default function DepartmentList() {
 
   const filteredDepartments = departments.filter(dept => dept.year.toString() === selectedYear)
 
+  const handleExport = () => {
+    toast({
+      title: "导出功能",
+      description: "部门考核数据导出功能尚未开发",
+    })
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
@@ -59,6 +67,10 @@ export default function DepartmentList() {
                   ))}
                 </SelectContent>
               </Select>
+              <Button variant="outline" onClick={handleExport}>
+                <Download className="w-4 h-4 mr-2" />
+                导出
+              </Button>
             </div>
           </div>
         </div>
