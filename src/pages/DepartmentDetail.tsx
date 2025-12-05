@@ -68,6 +68,9 @@ export default function DepartmentDetail() {
   const [categories, setCategories] = useState<Category[]>(mockCategories)
   const [editingCategory, setEditingCategory] = useState<string | null>(null)
 
+  // 根据URL参数获取部门名称
+  const departmentName = id ? decodeURIComponent(id) : mockDepartmentDetail.name
+
   const handleComplete = () => {
     toast({ title: "已完成", description: "返回列表" })
     navigate(-1)
@@ -255,7 +258,7 @@ export default function DepartmentDetail() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm">
               <div>
                 <span className="text-gray-500">部门名称：</span>
-                <span className="font-medium">{mockDepartmentDetail.name}</span>
+                <span className="font-medium">{departmentName}</span>
               </div>
               <div>
                 <span className="text-gray-500">考核年度：</span>

@@ -289,7 +289,7 @@ export default function Dashboard() {
                       <tr key={dept.name} className="border-b hover:bg-gray-50">
                         <td 
                           className="p-2 font-medium text-blue-600 cursor-pointer hover:underline"
-                          onClick={() => navigate('/department-assessment')}
+                          onClick={() => navigate(`/department/${encodeURIComponent(dept.name)}`)}
                         >
                           {dept.name}
                         </td>
