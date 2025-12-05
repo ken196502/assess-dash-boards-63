@@ -16,8 +16,26 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { TrendingUp, Users, Target, Award, Building2, User, Calendar, Eye, EyeOff } from 'lucide-react'
+import { TrendingUp, Users, Target, Award, Building2, User, Calendar, Eye, EyeOff, Edit, Download } from 'lucide-react'
 import { getDepartmentList } from '@/data/templateData'
+import { toast } from '@/hooks/use-toast'
+
+interface DepartmentAssessment {
+  id: string
+  name: string
+  score: number | null
+  grade: string | null
+  status: '未开始' | '进行中' | '已完成'
+  year: number
+}
+
+const mockDepartments: DepartmentAssessment[] = [
+  { id: "1", name: "销售部门", score: 85, grade: "A", status: "已完成", year: 2024 },
+  { id: "2", name: "技术部门", score: 92, grade: "A", status: "已完成", year: 2024 },
+  { id: "3", name: "人事部门", score: null, grade: null, status: "进行中", year: 2024 },
+  { id: "4", name: "财务部门", score: 78, grade: "B", status: "已完成", year: 2024 },
+  { id: "5", name: "市场部门", score: null, grade: null, status: "未开始", year: 2024 },
+]
 
 // 模拟数据
 const departmentScores = [
@@ -66,10 +84,24 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<'department' | 'personal'>('department')
   const [selectedYear, setSelectedYear] = useState<string>('2024')
   const [showCharts, setShowCharts] = useState<boolean>(false)
+  const [departments] = useState<DepartmentAssessment[]>(mockDepartments)
   
   // 生成年度选项
   const currentYear = new Date().getFullYear()
   const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - i).map(year => year.toString())
+  
+  const handleViewDetail = (department: DepartmentAssessment) => {
+    navigate(`/department/${department.id}`, { state: { department } })
+  }
+
+  const handleExport = () => {
+    toast({
+      title: "导出功能",
+      description: "部门考核数据导出功能尚未开发",
+    })
+  }
+
+  const filteredDepartments = departments.filter(dept => dept.year.toString() === selectedYear)
   
   // 部门维度指标
   const totalDepartments = 4
@@ -265,51 +297,93 @@ export default function Dashboard() {
         {/* 详细数据表格 */}
         <Card>
           <CardHeader>
-            <CardTitle>
-              {activeTab === 'department' ? '部门详细数据' : '个人考核概览'}
-            </CardTitle>
-            <CardDescription>
-              {activeTab === 'department' ? '各部门考核完成情况详细统计' : '个人考核完成情况汇总'}
-            </CardDescription>
+            <div>
+              <CardTitle>
+                {activeTab === 'department' ? '部门详细数据' : '个人考核概览'}
+              </CardTitle>
+              <CardDescription>
+                {activeTab === 'department' ? '各部门考核完成情况详细统计' : '个人考核完成情况汇总'}
+              </CardDescription>
+            </div>
           </CardHeader>
           <CardContent>
             {activeTab === 'department' ? (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left p-2">部门</th>
-                      <th className="text-left p-2">当前得分</th>
-                      <th className="text-left p-2">绩效</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {departmentScores.map((dept) => (
-                      <tr key={dept.name} className="border-b hover:bg-gray-50">
-                        <td 
-                          className="p-2 font-medium text-blue-600 cursor-pointer hover:underline"
-                          onClick={() => navigate(`/department/${encodeURIComponent(dept.name)}`)}
-                        >
-                          {dept.name}
-                        </td>
-                        <td className="p-2">{dept.score}</td>
-                        <td className="p-2">
-                          <span className={`px-2 py-1 rounded-full text-xs ${
-                            dept.score >= 90 
-                              ? 'bg-green-100 text-green-800' 
-                              : dept.score >= 80
-                              ? 'bg-blue-100 text-blue-800'
-                              : dept.score >= 70
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-red-100 text-red-800'
-                          }`}>
-                            {dept.score >= 90 ? 'A' : dept.score >= 80 ? 'B' : dept.score >= 70 ? 'C' : 'D'}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="bg-white rounded-lg border border-gray-200 overflow-hidden overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="whitespace-nowrap">部门名称</TableHead>
+                      <TableHead className="whitespace-nowrap">考核状态</TableHead>
+                      <TableHead className="whitespace-nowrap">考核分数</TableHead>
+                      <TableHead className="whitespace-nowrap">考核等级</TableHead>
+                      <TableHead className="whitespace-nowrap">操作</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredDepartments.length > 0 ? (
+                      filteredDepartments.map((dept) => (
+                        <TableRow key={dept.id}>
+                          <TableCell className="font-medium whitespace-nowrap">{dept.name}</TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                              ${dept.status === '已完成' ? 'bg-green-100 text-green-800' : ''}
+                              ${dept.status === '进行中' ? 'bg-blue-100 text-blue-800' : ''}
+                              ${dept.status === '未开始' ? 'bg-gray-100 text-gray-800' : ''}
+                            `}>
+                              {dept.status}
+                            </span>
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            {dept.score !== null ? (
+                              <span className="font-semibold text-blue-600">{dept.score}</span>
+                            ) : (
+                              <span className="text-gray-400">--</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            {dept.grade ? (
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                ${dept.grade === 'A' ? 'bg-green-100 text-green-800' : ''}
+                                ${dept.grade === 'B' ? 'bg-blue-100 text-blue-800' : ''}
+                                ${dept.grade === 'C' ? 'bg-yellow-100 text-yellow-800' : ''}
+                                ${dept.grade === 'D' ? 'bg-red-100 text-red-800' : ''}
+                              `}>
+                                {dept.grade}
+                              </span>
+                            ) : (
+                              <span className="text-gray-400">--</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleViewDetail(dept)}
+                              className="text-blue-600 hover:text-blue-700"
+                            >
+                              {dept.score !== null ? (
+                                <Eye className="w-4 h-4 mr-1" />
+                              ) : (
+                                <Edit className="w-4 h-4 mr-1 text-orange-500" />
+                              )}
+                              {dept.score !== null ? (
+                                <span>查看详情</span>
+                              ) : (
+                                <span className="text-orange-500">去评价</span>
+                              )}
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center py-8 text-gray-500 whitespace-nowrap">
+                          暂无部门考核数据
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
               </div>
             ) : (
               <div className="overflow-x-auto">
