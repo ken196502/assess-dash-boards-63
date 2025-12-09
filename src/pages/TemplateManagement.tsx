@@ -12,15 +12,29 @@ const mockTemplates: AssessmentTemplate[] = [
   {
     id: "1",
     department: "业务部门",
-    level: "管理层",
+    position: "部门经理",
     changeLog: "2024-01-15 创建模板",
     items: []
   },
   {
     id: "2",
     department: "技术部门",
-    level: "非管理层",
+    position: "高级工程师",
     changeLog: "2024-02-20 更新权重",
+    items: []
+  },
+  {
+    id: "3",
+    department: "财务部门",
+    position: "财务主管",
+    changeLog: "2024-03-10 创建模板",
+    items: []
+  },
+  {
+    id: "4",
+    department: "人力资源部",
+    position: "HR专员",
+    changeLog: "2024-03-15 更新权重",
     items: []
   }
 ]
@@ -287,7 +301,7 @@ export default function TemplateManagement() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">个人考核模板管理</h1>
-              <p className="text-gray-600">管理各部门、各职级的考核模板</p>
+              <p className="text-gray-600">管理各部门、各职务的考核模板</p>
             </div>
           </div>
         </div>
@@ -297,7 +311,7 @@ export default function TemplateManagement() {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[25%]">部门</TableHead>
-                <TableHead className="w-[20%]">职级</TableHead>
+                <TableHead className="w-[20%]">职务</TableHead>
                 <TableHead className="w-[35%]">变动日志</TableHead>
                 <TableHead className="w-[20%]">操作</TableHead>
               </TableRow>
@@ -307,10 +321,8 @@ export default function TemplateManagement() {
                 <TableRow key={template.id}>
                   <TableCell className="font-medium">{template.department}</TableCell>
                   <TableCell>
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
-                      ${template.level === '管理层' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'}
-                    `}>
-                      {template.level}
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      {template.position}
                     </span>
                   </TableCell>
                   <TableCell className="text-sm text-gray-600">{template.changeLog}</TableCell>
@@ -330,7 +342,7 @@ export default function TemplateManagement() {
                       <DialogContent className="max-w-7xl max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
                           <DialogTitle>
-                            设置模板 - {selectedTemplate?.department} / {selectedTemplate?.level}
+                            设置模板 - {selectedTemplate?.department} / {selectedTemplate?.position}
                           </DialogTitle>
                         </DialogHeader>
                         
