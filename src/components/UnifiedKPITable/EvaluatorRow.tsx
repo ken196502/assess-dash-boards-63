@@ -174,13 +174,13 @@ export function EvaluatorRow({
 
       {/* 评估备注列 - 仅在使用模式下显示 */}
       {mode === 'usage' && (
-        <TableCell>
+        <TableCell style={{ backgroundColor: '#FFF8E4' }}>
           <div className="space-y-1">
             <Input
               value={evaluator.remark ?? ''}
               onChange={(e) => onUpdateEvaluator(category.id, kpi.id, evaluator.id, "remark", e.target.value)}
               placeholder="备注"
-              className="w-full"
+              className="w-full bg-transparent"
             />
             {typeof evaluator.score === 'number' && evaluator.score < 0 && (
               <p className="text-xs text-red-600">扣分必须备注</p>
