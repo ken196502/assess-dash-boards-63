@@ -174,7 +174,7 @@ export function EvaluatorRow({
 
       {/* 评估备注列 - 仅在使用模式下显示 */}
       {mode === 'usage' && (
-        <TableCell style={{ backgroundColor: '#FFF8E4' }}>
+        <TableCell style={evaluator.position === '部门主管' ? { backgroundColor: '#FFF8E4' } : undefined}>
           <div className="space-y-1">
             <Input
               value={evaluator.remark ?? ''}
