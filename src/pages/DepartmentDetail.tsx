@@ -25,8 +25,8 @@ const mockCategories: Category[] = [
         target: "1000万元",
         weight: "30%",
         evaluators: [
-          { id: "eval1", name: "张三", weight: "50%", score: 85 },
-          { id: "eval2", name: "李四", weight: "50%", score: 90 },
+          { id: "eval1", name: "张三", position: "部门主管", weight: "50%", score: 85 },
+          { id: "eval2", name: "李四", position: "高级经理", weight: "50%", score: 90 },
         ],
         description:
           "口径说明：与财务部报送总部口径一致，已扣除手续费支出及利息支出，不考虑协同收入，得分=实际完成值/目标值，120分封顶。",
@@ -36,7 +36,7 @@ const mockCategories: Category[] = [
         name: "营业利润指标",
         target: "200万元",
         weight: "30%",
-        evaluators: [{ id: "eval3", name: "张三", weight: "100%" }],
+        evaluators: [{ id: "eval3", name: "张三", position: "部门主管", weight: "100%" }],
         description:
           "口径说明：与财务部报送总部口径一致，不考虑协同收入及所得税费用，得分=实际完成值/目标值，120分封顶。",
       },
@@ -53,8 +53,8 @@ const mockCategories: Category[] = [
         target: "新增50家",
         weight: "40%",
         evaluators: [
-          { id: "eval6", name: "董事长", weight: "70%", score: 88 },
-          { id: "eval7", name: "行政总裁", weight: "30%" },
+          { id: "eval6", name: "董事长", position: "董事长", weight: "70%", score: 88 },
+          { id: "eval7", name: "行政总裁", position: "行政总裁", weight: "30%" },
         ],
         description: "客户拓展的具体考核标准和计算方式，包括新客户数量、客户质量等维度的综合评价。",
       },
