@@ -322,11 +322,6 @@ export default function UnifiedTemplateManagement() {
                 </div>
               )}
             </div>
-            <div className="text-center border-t pt-3 text-sm text-blue-600">
-              <Button variant="link" className="p-0 h-auto text-blue-600" type="button">
-                下载模板文件
-              </Button>
-            </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsCopyDialogOpen(false)}>
                 取消
